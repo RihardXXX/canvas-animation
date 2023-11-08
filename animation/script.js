@@ -1,5 +1,8 @@
 console.log('script connection');
 
+import { animationState } from "./data.js";
+import { getItemByKeyCode, getItemByClass } from "./utils.js";
+
 // размеры канваса внутри
 const CANVAS_WIDTH = 150;
 const CANVAS_HEIGHT = 200;
@@ -16,66 +19,44 @@ const showSpeed = document.querySelector('.showSpeed');
 const image = new Image();
 image.src = './assets/data.png';
 
-// массив типов анимаций, количества кадров, их позиция
-const animationState = [
-    {
-        name: 'up',
-        countFrame: 12,
-    },
-    {
-        name: 'left',
-        countFrame: 12,
-    },
-    {
-        name: 'right',
-        countFrame: 12,
-    },
-    {
-        name: 'down',
-        countFrame: 12,
-    },
-];
-
-// собираем данные
-animationState.map((item, index) => {
-    const location = [];
-
-});
-
 // высота фрейма ряда откуда берем кадр
 const heightFrame = 160; // высота одного кадра 
 const widthFrame = 95.2; // ширина одно кадра
-let typeAnimation = 0; // тип анимации число от 0 до 4 (по оси y спрайта)
+let typeAnimation = 1; // тип анимации число от 0 до 4 (по оси y спрайта)
+let gameFrame = 0; // общий счетчик который увеличивается при кадрировании 60 кадров в секунду
+let stageFrame = 10; // погрешность
+let countFrame = 12 // количество кадров анимации в спрайте
 
 // тут мы выбираем ряд с анимациями
 navigation.addEventListener('click', e => {
-    switch(e.target.classList[0]) {
-        case 'left':
-            typeAnimation = 1 * heightFrame;
-            break;
-        case 'right':
-            typeAnimation = 2 * heightFrame;
-            break;
-        case 'up':
-            typeAnimation = 0 * heightFrame;
-            break;
-        case 'down':
-            typeAnimation = 3 * heightFrame;
-            break;  
-        default:
-            break;          
+    // нахождение объекта по классу
+    const item = getItemByClass({ data: animationState, e });
+
+    if (!item) {
+        return;
     }
 
+    countFrame = item.count; // 12
+    typeAnimation = item.index * heightFrame; // 0 * 160, 1 * 160, 2 * 160, 3 * 160 по оси Y
 });
 
+document.addEventListener('keydown', e => {
+    // нахождение объекта по коду клавиатуры
+    const item = getItemByKeyCode({ data: animationState, e });
 
-let gameFrame = 0; // общий счетчик который увеличивается при кадрировании 60 кадров в секунду
-let stageFrame = 10; // погрешность
+    if (!item) {
+        return;
+    }
+
+    countFrame = item.count; // 12
+    typeAnimation = item.index * heightFrame; // 0 * 160, 1 * 160, 2 * 160, 3 * 160 по оси Y
+});
 
 
 //  тут выбираем скорость анимации
 speed.addEventListener('change', e => {
-    const value = e.target.value
+    const value = e.target.value;
+
     if (typeof Number(value) !== 'number') {
         return;
     }
@@ -88,7 +69,7 @@ speed.addEventListener('change', e => {
 function animate() {
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    let position = Math.floor(gameFrame / stageFrame) % 12;
+    let position = Math.floor(gameFrame / stageFrame) % countFrame;
 
     ctx.drawImage(image, position * widthFrame, typeAnimation, widthFrame, heightFrame, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
