@@ -1,11 +1,16 @@
 console.log('script connection');
 
 import { animationState } from "./data.js";
-import { getItemByKeyCode, getItemByClass } from "./utils.js";
+import { 
+    getItemByKeyCode, 
+    getItemByClass, 
+    useLayer,
+    useAnimationObject, 
+} from "./utils.js";
 
 // размеры канваса внутри
 const CANVAS_WIDTH = 600;
-const CANVAS_HEIGHT = 200;
+const CANVAS_HEIGHT = 250;
 // получение элементов
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -19,9 +24,9 @@ const showSpeed = document.querySelector('.showSpeed');
 // персонаж
 const imagePeople = new Image();
 imagePeople.src = './assets/data.png';
-// первый слой
-const imageLayer1 = new Image();
-imageLayer1.src = './assets/background_1.png';
+// земля
+// const imageLayer1 = new Image();
+// imageLayer1.src = './assets/background_1.png';
 
 
 // высота фрейма ряда откуда берем кадр
@@ -35,8 +40,6 @@ const heightPeople = 150; // высота человека в канвасе п�
 const widthPeople = 100; // ширина человека в канвасе после вырезания из спрайта
 const positionXPeopleFromCanvas = Math.floor(CANVAS_WIDTH / 2) - Math.floor(widthPeople / 2); // позиция человека в канвасе ширину канваса делим на 2 и минусуем ширину человека делим на 2
 const positionYPeopleFromCanvas = 25; // пересчитаем высоту относительно первого слоя земли позже
-let drawLeftOrFightLayer1 = 0; // направление движение слоя земли
-let drawLeftOrFightLayer2 = 2400; // второй кадр для земли
 
 // тут мы выбираем ряд с анимациями
 navigation.addEventListener('click', e => {
@@ -75,14 +78,52 @@ speed.addEventListener('change', e => {
     stageFrame = 51 - value;
 });
 
+// небо
+const sky = useLayer({
+    imageUrl: './assets/background_2.png',
+    speed: 0.2,
+    ctxCanvas: ctx,
+    positionX1: 0,
+    positionX2: 600,
+    positionY: 0,
+    widthImage: 600,
+    heightImage: 150,
+});
+
+// человек
+const people = useAnimationObject({
+    imageUrl: './assets/data.png',
+    ctxCanvas: ctx,
+    gameFrame,
+    stageFrame,
+    countFrame,
+    typeAnimation,
+});
+
+// земля
+const earth = useLayer({
+    imageUrl: './assets/background_1.png',
+    speed: 1,
+    ctxCanvas: ctx,
+    positionX1: 0,
+    positionX2: 2400,
+    positionY: -433,
+    widthImage: 2400,
+    heightImage: 720,
+});
 
 // запуск анимации человека
-function animatePeople() {
+function animate() {
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT); // очистка всего канваса 60 раз в секунду
 
+    // анимация неба
+    sky.drawImage();
+    sky.updated();
+
+    // когда 9 аргументов логика такая
+    // персонаж
     let position = Math.floor(gameFrame / stageFrame) % countFrame;
 
-    // когда 9 аргументов логи ка такая
     ctx.drawImage(
         imagePeople, // сама картинка спрайт общая
         position * widthFrame, // сдвиг по оси Х кадра спрайта для среза картинки (точка Х)
@@ -95,34 +136,13 @@ function animatePeople() {
         heightPeople, // высота срезеной картинки 
     );
 
-    if (drawLeftOrFightLayer1 <= -2400) {
-        drawLeftOrFightLayer1 = 0
-    } else {
-        drawLeftOrFightLayer1-=1
-    }
 
-    if (drawLeftOrFightLayer2 <= 0) {
-        drawLeftOrFightLayer2 = 2400
-    } else {
-        drawLeftOrFightLayer2-=1
-    }
-
-    ctx.drawImage(
-        imageLayer1, 
-        drawLeftOrFightLayer1, 
-        -433, 
-    );
-
-    ctx.drawImage(
-        imageLayer1, 
-        drawLeftOrFightLayer2, 
-        -433, 
-    );
-
+    earth.drawImage();
+    earth.updated();
     
     gameFrame++;
-    requestAnimationFrame(animatePeople);
+    requestAnimationFrame(animate);
 }
 
 
-animatePeople();
+animate();
