@@ -74,9 +74,15 @@ const useLayer = ({ imageUrl, speed, ctxCanvas, positionX1, positionX2, position
         )
     }
 
+    // увеличить скорость слоя
+    const changeSpeed = newSpeed => {
+        speed = newSpeed;
+    }
+
     return {
         updated,
         drawImage,
+        changeSpeed,
     };
 };
 
@@ -106,6 +112,7 @@ const useAnimationObject = ({
         // когда 9 аргументов логика такая
         // персонаж
         position = Math.floor(gameFrame / stageFrame) % countFrame;
+        gameFrame++;
     }
 
     const drawImage = () => {
@@ -122,11 +129,22 @@ const useAnimationObject = ({
         );
     }
 
+    const changeTypeAnimation = newTypeAnimation => {
+        typeAnimation = newTypeAnimation;
+    }
+
+    const changeSpeedAnimation = newStageFrame => {
+        stageFrame = newStageFrame;
+    }
+
     return {
         updated,
         drawImage,
+        changeTypeAnimation,
+        changeSpeedAnimation,
     };
 }
+
 
 export {
     getItemByClass,
