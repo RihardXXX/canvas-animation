@@ -34,13 +34,41 @@ const getItemByClass = ({ data, e }) => {
 }
 
 // хуки слоев и их движение
-const useLayer = ({ imageUrl, speed, ctxCanvas, positionX1, positionX2, positionY, widthImage, heightImage }) => {
+const useLayer = ({ 
+    imageUrl, 
+    speed, 
+    ctxCanvas, 
+    positionX1, 
+    positionX2, 
+    positionY, 
+    widthImage, 
+    heightImage, 
+    reverse 
+}) => {
 
     const image = new Image();
     image.src = imageUrl;
 
     // функция отсчета координат
     const updated = () => {
+
+        if (reverse) {
+            // кадры ставим друг за другом и если кадры уходят влево то ставим вперед
+            if (positionX1 >= widthImage) {
+                positionX1 = -widthImage + speed;
+            } else {
+                positionX1 = positionX1 + speed
+            }
+
+            if (positionX2 >= widthImage) {
+                positionX2 = -widthImage + speed;
+            } else {
+                positionX2 = positionX2 + speed;
+            }
+
+            return;
+        }
+
         // кадры ставим друг за другом и если кадры уходят влево то ставим вперед
         if (positionX1 <= -widthImage) {
             positionX1 = widthImage + positionX2 - speed;
@@ -79,10 +107,16 @@ const useLayer = ({ imageUrl, speed, ctxCanvas, positionX1, positionX2, position
         speed = newSpeed;
     }
 
+    // изменить направление движения слоя
+    const setReverse = status => {
+        reverse = status;
+    }
+
     return {
         updated,
         drawImage,
         changeSpeed,
+        setReverse,
     };
 };
 

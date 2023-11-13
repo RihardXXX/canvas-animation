@@ -90,6 +90,14 @@ navigation.addEventListener('click', e => {
     countFrame = item.count; // 12
     typeAnimation = item.index * heightFrame; // 0 * 160, 1 * 160, 2 * 160, 3 * 160 по оси Y
     people.changeTypeAnimation(typeAnimation);
+    // если выбрано левое направление меняем движение слоя
+    if (item.name === 'left') {
+        earth.setReverse(true);
+    }
+
+    if (item.name === 'right') {
+        earth.setReverse(false);
+    }
 });
 
 document.addEventListener('keydown', e => {
@@ -103,6 +111,14 @@ document.addEventListener('keydown', e => {
     countFrame = item.count; // 12
     typeAnimation = item.index * heightFrame; // 0 * 160, 1 * 160, 2 * 160, 3 * 160 по оси Y
     people.changeTypeAnimation(typeAnimation);
+    // если выбрано левое направление меняем движение слоя
+    if (item.name === 'left') {
+        earth.setReverse(true);
+    }
+
+    if (item.name === 'right') {
+        earth.setReverse(false);
+    }
 });
 
 

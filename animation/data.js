@@ -39,7 +39,6 @@ animationState = animationState.map((item, index) => {
     }
 });
 
-// console.log('animationState: ', animationState);
 
 export {
     animationState,
