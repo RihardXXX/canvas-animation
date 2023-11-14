@@ -79,7 +79,7 @@ const speed = document.querySelector('.range');
 const showSpeed = document.querySelector('.showSpeed');
 // Слушатели событий
 // тут мы выбираем ряд с анимациями
-navigation.addEventListener('click', e => {
+navigation.addEventListener('mousedown', e => {
     // нахождение объекта по классу
     const item = getItemByClass({ data: animationState, e });
 
@@ -98,9 +98,20 @@ navigation.addEventListener('click', e => {
     if (item.name === 'right') {
         earth.setReverse(false);
     }
+
+    animate();
+});
+
+navigation.addEventListener('mouseup', e => {
+    // нахождение объекта по классу
+    cancelAnimationFrame(reqAnimFrameId);
 });
 
 document.addEventListener('keydown', e => {
+
+    // чтобы нажатие сработало один раз
+    if (e.repeat) return;
+
     // нахождение объекта по коду клавиатуры
     const item = getItemByKeyCode({ data: animationState, e });
 
@@ -119,6 +130,17 @@ document.addEventListener('keydown', e => {
     if (item.name === 'right') {
         earth.setReverse(false);
     }
+
+    animate();
+});
+
+document.addEventListener('keyup', e => {
+
+    // чтобы поднятие клавы сработало разово сработало один раз
+    if (e.repeat) return;
+
+    // отмена анимации
+    cancelAnimationFrame(reqAnimFrameId);
 });
 
 
@@ -145,6 +167,8 @@ speed.addEventListener('change', e => {
 });
 
 
+var reqAnimFrameId;
+
 // запуск анимаций всех
 function animate() {
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT); // очистка всего канваса 60 раз в секунду
@@ -162,8 +186,24 @@ function animate() {
     earth.drawImage();
     earth.updated();
     
-    requestAnimationFrame(animate);
+    reqAnimFrameId = requestAnimationFrame(animate);
 }
 
+// картинки когда будут готовы можно сделать первый рендер
+Promise.all([
+    sky.thePictureIsReady(),
+    people.thePictureIsReady(),
+    earth.thePictureIsReady(),
+])
+    .then(() => {
+        // анимация неба
+        sky.drawImage();
+        // персонаж
+        people.drawImage();
+        // движение земли
+        earth.drawImage();
+    })
+    .catch(() => {
+        console.error('first render error');
+    })
 
-animate();

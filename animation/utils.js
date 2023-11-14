@@ -112,11 +112,21 @@ const useLayer = ({
         reverse = status;
     }
 
+    // состояние что картинка готова
+    const thePictureIsReady = async  () => {
+        return new Promise(resolve => {
+            image.onload = function() {
+                resolve();
+            }
+        })
+    }
+
     return {
         updated,
         drawImage,
         changeSpeed,
         setReverse,
+        thePictureIsReady,
     };
 };
 
@@ -136,9 +146,9 @@ const useAnimationObject = ({
         heightCutImageBYCanvas,
     }) => {
 
-
     const image = new Image();
     image.src = imageUrl;
+
     
     let position = 0
 
@@ -171,11 +181,21 @@ const useAnimationObject = ({
         stageFrame = newStageFrame;
     }
 
+    // состояние что картинка готова
+    const thePictureIsReady = async  () => {
+        return new Promise(resolve => {
+            image.onload = function() {
+                resolve();
+            }
+        })
+    }
+
     return {
         updated,
         drawImage,
         changeTypeAnimation,
         changeSpeedAnimation,
+        thePictureIsReady,
     };
 }
 
