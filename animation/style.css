@@ -45,6 +45,7 @@ body {
     left: 1rem;
     transform: translate(0, -50%);
     width: 10rem;
+    user-select: none;
 }
 
 .right {
@@ -53,6 +54,7 @@ body {
     right: 1rem;
     transform: translate(0, -50%);
     width: 10rem;
+    user-select: none;
 }
 
 .up {
@@ -63,6 +65,7 @@ body {
     height: 10rem;
     max-width: 1.5rem;
     word-break: break-all;
+    user-select: none;
 }
 
 .down {
@@ -87,6 +90,7 @@ body {
     gap: 1rem;
     color: #fff;
     font-size: 1.8rem;
+    user-select: none;
 }
 
 .showSpeed {
@@ -112,3 +116,52 @@ body {
 	cursor: pointer;
 	-webkit-appearance: none;
 	margin-top: -4px;
+}
+
+@media only screen and (max-width: 1024px) {
+    #canvas {
+        border: none;
+        width: 100vw;
+        height: 40vh;
+        position: relative;
+    }
+
+    .navigation {
+        position: relative;
+        margin: 1rem auto;
+        width: 100%;
+        height: 30rem;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        border: none;
+    }
+
+    .speed {
+        justify-content: flex-end;
+    }
+}
+
+@media only screen and (max-width: 650px) {
+    #canvas {
+        border: none;
+        width: 100vw;
+        height: 25vh;
+        position: relative;
+    }
+
+    .navigation {
+        position: relative;
+        margin: 1rem auto;
+        width: 100%;
+        height: 30rem;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        border: none;
+    }
+
+    .speed {
+        justify-content: flex-end;
+    }
+}
