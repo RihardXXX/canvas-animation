@@ -93,71 +93,108 @@ const earth = useLayer({
 const navigation = document.querySelector('.navigation');
 const speed = document.querySelector('.range');
 const showSpeed = document.querySelector('.showSpeed');
-// Слушатели событий
-// тут мы выбираем ряд с анимациями
-navigation.addEventListener('pointerdown', e => {
-    // нахождение объекта по классу
-    const item = getItemByClass({ data: animationState, e });
 
-    if (!item) {
-        return;
-    }
 
-    countFrame = item.count; // 12
-    typeAnimation = item.index * heightFrame; // 0 * 160, 1 * 160, 2 * 160, 3 * 160 по оси Y
-    people.changeTypeAnimation(typeAnimation);
-    // если выбрано левое направление меняем движение слоя
-    if (item.name === 'left') {
-        earth.setReverse(true);
-    }
+if (desktop) {
+    console.log('desktop');
+    // Слушатели событий
+    // тут мы выбираем ряд с анимациями
+    navigation.addEventListener('mouseup', e => {
+        // нахождение объекта по классу
+        const item = getItemByClass({ data: animationState, e });
 
-    if (item.name === 'right') {
-        earth.setReverse(false);
-    }
+        if (!item) {
+            return;
+        }
 
-    animate();
-});
+        countFrame = item.count; // 12
+        typeAnimation = item.index * heightFrame; // 0 * 160, 1 * 160, 2 * 160, 3 * 160 по оси Y
+        people.changeTypeAnimation(typeAnimation);
+        // если выбрано левое направление меняем движение слоя
+        if (item.name === 'left') {
+            earth.setReverse(true);
+        }
 
-navigation.addEventListener('pointerup', e => {
-    // нахождение объекта по классу
-    cancelAnimationFrame(reqAnimFrameId);
-});
+        if (item.name === 'right') {
+            earth.setReverse(false);
+        }
 
-document.addEventListener('keydown', e => {
+        animate();
+    });
 
-    // чтобы нажатие сработало один раз
-    if (e.repeat) return;
+    navigation.addEventListener('mousedown', e => {
+        // нахождение объекта по классу
+        cancelAnimationFrame(reqAnimFrameId);
+    });
 
-    // нахождение объекта по коду клавиатуры
-    const item = getItemByKeyCode({ data: animationState, e });
+    document.addEventListener('keydown', e => {
 
-    if (!item) {
-        return;
-    }
+        // чтобы нажатие сработало один раз
+        if (e.repeat) return;
 
-    countFrame = item.count; // 12
-    typeAnimation = item.index * heightFrame; // 0 * 160, 1 * 160, 2 * 160, 3 * 160 по оси Y
-    people.changeTypeAnimation(typeAnimation);
-    // если выбрано левое направление меняем движение слоя
-    if (item.name === 'left') {
-        earth.setReverse(true);
-    }
+        // нахождение объекта по коду клавиатуры
+        const item = getItemByKeyCode({ data: animationState, e });
 
-    if (item.name === 'right') {
-        earth.setReverse(false);
-    }
+        if (!item) {
+            return;
+        }
 
-    animate();
-});
+        countFrame = item.count; // 12
+        typeAnimation = item.index * heightFrame; // 0 * 160, 1 * 160, 2 * 160, 3 * 160 по оси Y
+        people.changeTypeAnimation(typeAnimation);
+        // если выбрано левое направление меняем движение слоя
+        if (item.name === 'left') {
+            earth.setReverse(true);
+        }
 
-document.addEventListener('keyup', e => {
+        if (item.name === 'right') {
+            earth.setReverse(false);
+        }
 
-    // чтобы поднятие клавы сработало разово сработало один раз
-    if (e.repeat) return;
+        animate();
+    });
 
-    // отмена анимации
-    cancelAnimationFrame(reqAnimFrameId);
-});
+    document.addEventListener('keyup', e => {
+        // чтобы поднятие клавы сработало разово сработало один раз
+        if (e.repeat) return;
+
+        // отмена анимации
+        cancelAnimationFrame(reqAnimFrameId);
+    });
+
+} else if (tablet || mobile) {
+
+    console.log('tablet || mobile');
+
+    navigation.addEventListener('touchstart', e => {
+        // нахождение объекта по классу
+        const item = getItemByClass({ data: animationState, e });
+
+        if (!item) {
+            return;
+        }
+
+        countFrame = item.count; // 12
+        typeAnimation = item.index * heightFrame; // 0 * 160, 1 * 160, 2 * 160, 3 * 160 по оси Y
+        people.changeTypeAnimation(typeAnimation);
+        // если выбрано левое направление меняем движение слоя
+        if (item.name === 'left') {
+            earth.setReverse(true);
+        }
+
+        if (item.name === 'right') {
+            earth.setReverse(false);
+        }
+
+        animate();
+    });
+
+    navigation.addEventListener('touchend', e => {
+        // нахождение объекта по классу
+        cancelAnimationFrame(reqAnimFrameId);
+    });
+
+}
 
 
 //  тут выбираем скорость анимации
