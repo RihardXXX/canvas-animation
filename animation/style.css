@@ -30,13 +30,14 @@ body {
 }
 
 .left, .right, .up, .down {
+    display: block;
     border: 1px solid white;
     border-radius: .2rem;
     color: white;
-    padding: 1rem 2rem;
     font-size: 2rem;
     cursor: pointer;
     text-align: center;
+    background-color: black;
 }
 
 .left {
@@ -44,7 +45,8 @@ body {
     top: 50%;
     left: 1rem;
     transform: translate(0, -50%);
-    width: 10rem;
+    width: 14rem;
+    height: 6rem;
     user-select: none;
 }
 
@@ -53,7 +55,8 @@ body {
     top: 50%;
     right: 1rem;
     transform: translate(0, -50%);
-    width: 10rem;
+    width: 14rem;
+    height: 6rem;
     user-select: none;
 }
 
@@ -62,8 +65,8 @@ body {
     top: 1rem;
     left: 50%;
     transform: translate(-50%, 0);
-    height: 10rem;
-    max-width: 1.5rem;
+    height: 12rem;
+    width: 6rem;
     word-break: break-all;
     user-select: none;
 }
@@ -73,13 +76,16 @@ body {
     bottom: 1rem;
     left: 50%;
     transform: translate(-50%, 0);
-    height: 10rem;
-    max-width: 1.5rem;
+    height: 12rem;
+    max-width: 6rem;
     word-break: break-all;
 }
 
-.left:hover, .right:hover, .up:hover, .down:hover {
-    color: green;
+
+@media only screen and (min-width: 1024px) {
+    .left:hover, .right:hover, .up:hover, .down:hover {
+        color: green;
+    }
 }
 
 .speed {
