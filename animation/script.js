@@ -95,7 +95,7 @@ const speed = document.querySelector('.range');
 const showSpeed = document.querySelector('.showSpeed');
 // Слушатели событий
 // тут мы выбираем ряд с анимациями
-navigation.addEventListener('mousedown', e => {
+navigation.addEventListener('pointerdown', e => {
     // нахождение объекта по классу
     const item = getItemByClass({ data: animationState, e });
 
@@ -118,7 +118,7 @@ navigation.addEventListener('mousedown', e => {
     animate();
 });
 
-navigation.addEventListener('mouseup', e => {
+navigation.addEventListener('pointerup', e => {
     // нахождение объекта по классу
     cancelAnimationFrame(reqAnimFrameId);
 });
