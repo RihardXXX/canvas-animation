@@ -97,33 +97,9 @@ const showSpeed = document.querySelector('.showSpeed');
 
 if (desktop) {
     console.log('desktop');
-    // Слушатели событий
-    // тут мы выбираем ряд с анимациями
+    navigation.addEventListener('mousedown', startHandler);
+
     navigation.addEventListener('mouseup', e => {
-        // нахождение объекта по классу
-        const item = getItemByClass({ data: animationState, e });
-
-        if (!item) {
-            return;
-        }
-
-        countFrame = item.count; // 12
-        typeAnimation = item.index * heightFrame; // 0 * 160, 1 * 160, 2 * 160, 3 * 160 по оси Y
-        people.changeTypeAnimation(typeAnimation);
-        // если выбрано левое направление меняем движение слоя
-        if (item.name === 'left') {
-            earth.setReverse(true);
-        }
-
-        if (item.name === 'right') {
-            earth.setReverse(false);
-        }
-
-        animate();
-    });
-
-    navigation.addEventListener('mousedown', e => {
-        // нахождение объекта по классу
         cancelAnimationFrame(reqAnimFrameId);
     });
 
@@ -166,28 +142,7 @@ if (desktop) {
 
     console.log('tablet || mobile');
 
-    navigation.addEventListener('touchstart', e => {
-        // нахождение объекта по классу
-        const item = getItemByClass({ data: animationState, e });
-
-        if (!item) {
-            return;
-        }
-
-        countFrame = item.count; // 12
-        typeAnimation = item.index * heightFrame; // 0 * 160, 1 * 160, 2 * 160, 3 * 160 по оси Y
-        people.changeTypeAnimation(typeAnimation);
-        // если выбрано левое направление меняем движение слоя
-        if (item.name === 'left') {
-            earth.setReverse(true);
-        }
-
-        if (item.name === 'right') {
-            earth.setReverse(false);
-        }
-
-        animate();
-    });
+    navigation.addEventListener('touchstart', startHandler);
 
     navigation.addEventListener('touchend', e => {
         // нахождение объекта по классу
@@ -218,6 +173,31 @@ speed.addEventListener('change', e => {
     // console.log(value);
     earth.changeSpeed(value / 8);
 });
+
+
+// функции слушатели событий
+function startHandler(e) {
+    // нахождение объекта по классу
+    const item = getItemByClass({ data: animationState, e });
+
+    if (!item) {
+        return;
+    }
+
+    countFrame = item.count; // 12
+    typeAnimation = item.index * heightFrame; // 0 * 160, 1 * 160, 2 * 160, 3 * 160 по оси Y
+    people.changeTypeAnimation(typeAnimation);
+    // если выбрано левое направление меняем движение слоя
+    if (item.name === 'left') {
+        earth.setReverse(true);
+    }
+
+    if (item.name === 'right') {
+        earth.setReverse(false);
+    }
+
+    animate();
+}
 
 
 var reqAnimFrameId;
