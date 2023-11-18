@@ -60,6 +60,18 @@ const sky = useLayer({
     heightImage: 150,
 });
 
+// задний фон города
+const city = useLayer({
+    imageUrl: './assets/background_3.png',
+    speed: 1,
+    ctxCanvas: ctx,
+    positionX1: 0,
+    positionX2: 600,
+    positionY: 0,
+    widthImage: 600,
+    heightImage: 172,
+});
+
 // человек
 const people = useAnimationObject({
     imageUrl: './assets/data.png',
@@ -104,30 +116,7 @@ if (desktop) {
     });
 
     document.addEventListener('keydown', e => {
-
-        // чтобы нажатие сработало один раз
-        if (e.repeat) return;
-
-        // нахождение объекта по коду клавиатуры
-        const item = getItemByKeyCode({ data: animationState, e });
-
-        if (!item) {
-            return;
-        }
-
-        countFrame = item.count; // 12
-        typeAnimation = item.index * heightFrame; // 0 * 160, 1 * 160, 2 * 160, 3 * 160 по оси Y
-        people.changeTypeAnimation(typeAnimation);
-        // если выбрано левое направление меняем движение слоя
-        if (item.name === 'left') {
-            earth.setReverse(true);
-        }
-
-        if (item.name === 'right') {
-            earth.setReverse(false);
-        }
-
-        animate();
+        startHandler(e, true);
     });
 
     document.addEventListener('keyup', e => {
@@ -167,18 +156,22 @@ speed.addEventListener('change', e => {
 
     stageFrame = (50 - value) / 2;
     // изменение скорости анимации человека
-    // console.log(stageFrame);
     people.changeSpeedAnimation(stageFrame);
     // изменение скорости движения земли
-    // console.log(value);
     earth.changeSpeed(value / 8);
 });
 
 
 // функции слушатели событий
-function startHandler(e) {
-    // нахождение объекта по классу
-    const item = getItemByClass({ data: animationState, e });
+function startHandler(e, isKeyboard) {
+
+    // чтобы нажатие сработало один раз если через клаву идет активация функции
+    if (isKeyboard && e.repeat) return;
+
+    // нахождение объекта по классу если через клаву то запуск другой функции
+    const item = isKeyboard 
+        ? getItemByKeyCode({ data: animationState, e }) 
+        : getItemByClass({ data: animationState, e });
 
     if (!item) {
         return;
@@ -190,10 +183,12 @@ function startHandler(e) {
     // если выбрано левое направление меняем движение слоя
     if (item.name === 'left') {
         earth.setReverse(true);
+        city.setReverse(true);
     }
 
     if (item.name === 'right') {
         earth.setReverse(false);
+        city.setReverse(false);
     }
 
     animate();
@@ -210,6 +205,10 @@ function animate() {
     sky.drawImage();
     sky.updated();
 
+    // анимация заднего фона города
+    city.drawImage();
+    city.updated();
+
     // когда 9 аргументов логика такая
     // персонаж
     people.drawImage();
@@ -225,12 +224,15 @@ function animate() {
 // картинки когда будут готовы можно сделать первый рендер
 Promise.all([
     sky.thePictureIsReady(),
+    city.thePictureIsReady(),
     people.thePictureIsReady(),
     earth.thePictureIsReady(),
 ])
     .then(() => {
         // анимация неба
         sky.drawImage();
+        // город
+        city.drawImage();
         // персонаж
         people.drawImage();
         // движение земли
