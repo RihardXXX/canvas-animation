@@ -44,7 +44,7 @@ let countFrame = 12 // количество кадров анимации в с�
 const heightPeople = 150; // высота человека в канвасе после вырезания из спрайта
 const widthPeople = 100; // ширина человека в канвасе после вырезания из спрайта
 const positionXPeopleInCanvas = Math.floor(CANVAS_WIDTH / 2) - Math.floor(widthPeople / 2); // позиция человека в канвасе ширину канваса делим на 2 и минусуем ширину человека делим на 2
-const positionYPeopleInCanvas = 25; // пересчитаем высоту относительно первого слоя земли позже
+let positionYPeopleInCanvas = 25; // пересчитаем высоту относительно первого слоя земли позже
 
 
 // Управляемые объекты
@@ -109,7 +109,10 @@ const showSpeed = document.querySelector('.showSpeed');
 
 if (desktop) {
     console.log('desktop');
+    // анимация и слой
     navigation.addEventListener('mousedown', startHandler);
+    // турбо режим
+    navigation.addEventListener('mousedown', turbo);
 
     navigation.addEventListener('mouseup', e => {
         cancelAnimationFrame(reqAnimFrameId);
@@ -132,6 +135,7 @@ if (desktop) {
     console.log('tablet || mobile');
 
     navigation.addEventListener('touchstart', startHandler);
+    navigation.addEventListener('touchstart', turbo);
 
     navigation.addEventListener('touchend', e => {
         // нахождение объекта по классу
@@ -159,6 +163,7 @@ speed.addEventListener('change', e => {
     people.changeSpeedAnimation(stageFrame);
     // изменение скорости движения земли
     earth.changeSpeed(value / 8);
+    city.changeSpeed(value / 12);
 });
 
 
@@ -169,6 +174,7 @@ function startHandler(e, isKeyboard) {
     if (isKeyboard && e.repeat) return;
 
     // нахождение объекта по классу если через клаву то запуск другой функции
+    // для анимация персонажа
     const item = isKeyboard 
         ? getItemByKeyCode({ data: animationState, e }) 
         : getItemByClass({ data: animationState, e });
@@ -184,16 +190,40 @@ function startHandler(e, isKeyboard) {
     if (item.name === 'left') {
         earth.setReverse(true);
         city.setReverse(true);
+        animate();
     }
 
     if (item.name === 'right') {
         earth.setReverse(false);
         city.setReverse(false);
+        animate();
     }
 
-    animate();
+    console.log(e);
 }
 
+
+// прыжок персонажа
+// function jump(e) {
+//     if (e.target.classList[0] !== 'jump') {
+//         return;
+//     }
+
+//     console.log('jump');
+//     for (let i = positionYPeopleInCanvas; i > 0; i--) {
+//         people.changePositionYPeopleInCanvas(positionYPeopleInCanvas - );
+//     }
+
+//     animate();
+// }
+
+// турбо режим срабатывает при удержании
+function turbo(e) {
+    if (e.target.classList[0] === 'turbo') {
+        animate();
+        return;
+    }
+}
 
 var reqAnimFrameId;
 

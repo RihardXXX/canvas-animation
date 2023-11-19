@@ -149,34 +149,39 @@ const useAnimationObject = ({
     const image = new Image();
     image.src = imageUrl;
 
-    
-    let position = 0
+    // для анимации движения внутри спрайта шаг X
+    let positionX = 0;
+
+    // для прыжка персонажа регулировка по оси Y на самом канвасе
+    let positionYJump = 0;
 
     const updated = () => {
         // когда 9 аргументов логика такая
         // персонаж
-        position = Math.floor(gameFrame / stageFrame) % countFrame;
+        positionX = Math.floor(gameFrame / stageFrame) % countFrame;
         gameFrame++;
     }
 
     const drawImage = () => {
         ctxCanvas.drawImage(
             image, // сама картинка спрайт общая
-            position * widthFrameImageCut, // сдвиг по оси Х кадра спрайта для среза картинки (точка Х)
+            positionX * widthFrameImageCut, // сдвиг по оси Х кадра спрайта для среза картинки (точка Х)
             typeAnimation, // тип анимации персонажа сдвиг по оси Y для среза (точка У)
             widthFrameImageCut, // ширина которую нужно срезать в картинке спрайта относительно Х
             heightFrameImageCut, // высота которую нужно срезать относительно Y
             positionXPeopleInCanvas, // итоговая картинка куда будет положена в канвасе по оси Х
             positionYPeopleInCanvas, // итоговая картинка куда будет положена в канвасе по оси У
             widthCutImageByCanvas, // ширина срезанной картинки
-            heightCutImageBYCanvas, // высота срезеной картинки 
+            heightCutImageBYCanvas, // высота срезанной картинки 
         );
     }
 
+    // тип анимации
     const changeTypeAnimation = newTypeAnimation => {
         typeAnimation = newTypeAnimation;
     }
 
+    // скорость анимации
     const changeSpeedAnimation = newStageFrame => {
         stageFrame = newStageFrame;
     }
@@ -190,12 +195,19 @@ const useAnimationObject = ({
         })
     }
 
+    // прыжок объекта на заданую высоту
+    const changePositionYPeopleInCanvas = newValue => {
+        console.log(newValue);
+        positionYPeopleInCanvas = newValue;
+    }
+
     return {
         updated,
         drawImage,
         changeTypeAnimation,
         changeSpeedAnimation,
         thePictureIsReady,
+        changePositionYPeopleInCanvas,
     };
 }
 
