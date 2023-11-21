@@ -146,9 +146,9 @@ if (desktop) {
     navigation.addEventListener('touchstart', jump);
 
     navigation.addEventListener('touchend', e => {
-        if (e.target.classList[0] === 'jump') {
-            return;
-        }
+        // if (e.target.classList[0] === 'jump') {
+        //     return;
+        // }
         // нахождение объекта по классу
         cancelAnimationFrame(reqAnimFrameId);
     });
