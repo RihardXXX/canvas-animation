@@ -222,6 +222,7 @@ function jump(e) {
 
 
     animateJump();
+    animate();
 }
 
 // турбо режим срабатывает при удержании
