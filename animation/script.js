@@ -113,8 +113,15 @@ if (desktop) {
     navigation.addEventListener('mousedown', startHandler);
     // турбо режим
     navigation.addEventListener('mousedown', turbo);
+    // прыжок
+    navigation.addEventListener('mousedown', jump);
 
     navigation.addEventListener('mouseup', e => {
+
+        if (e.target.classList[0] === 'jump') {
+            return;
+        }
+
         cancelAnimationFrame(reqAnimFrameId);
     });
 
@@ -198,24 +205,20 @@ function startHandler(e, isKeyboard) {
         city.setReverse(false);
         animate();
     }
-
-    console.log(e);
 }
 
 
 // прыжок персонажа
-// function jump(e) {
-//     if (e.target.classList[0] !== 'jump') {
-//         return;
-//     }
+function jump(e) {
+    if (e.target.classList[0] !== 'jump') {
+        return;
+    }
 
-//     console.log('jump');
-//     for (let i = positionYPeopleInCanvas; i > 0; i--) {
-//         people.changePositionYPeopleInCanvas(positionYPeopleInCanvas - );
-//     }
+    console.log('jump');
 
-//     animate();
-// }
+
+    animateJump();
+}
 
 // турбо режим срабатывает при удержании
 function turbo(e) {
@@ -229,6 +232,7 @@ var reqAnimFrameId;
 
 // запуск анимаций всех
 function animate() {
+
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT); // очистка всего канваса 60 раз в секунду
 
     // анимация неба
@@ -249,6 +253,33 @@ function animate() {
     earth.updated();
     
     reqAnimFrameId = requestAnimationFrame(animate);
+}
+
+
+var reqAnimFrameIdJump;
+// запуск анимации пряжка он не останавливается поэтому создаем отдельным потоком
+function animateJump() {
+    // стираем только область человека в прыжке
+    ctx.clearRect(    
+        positionXPeopleInCanvas,
+        positionYPeopleInCanvas,
+        widthPeople,
+        0,
+    ); // очистка всего канваса 60 раз в секунду
+    
+    const countJump = people.changePositionYPeopleInCanvas();
+
+    // после 1 прыжка отключать анимацию
+    if (countJump === 1) {
+        // console.log(countJump);
+        cancelAnimationFrame(reqAnimFrameIdJump);
+        // сбрасываем счетчик, чтобы могли прыгнуть повторно
+        people.resetJumpCount();
+        return;
+    }
+
+    people.drawImage();
+    reqAnimFrameIdJump = requestAnimationFrame(animateJump);
 }
 
 // картинки когда будут готовы можно сделать первый рендер

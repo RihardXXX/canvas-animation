@@ -153,7 +153,7 @@ const useAnimationObject = ({
     let positionX = 0;
 
     // для прыжка персонажа регулировка по оси Y на самом канвасе
-    let positionYJump = 0;
+    let positionYJump = positionYPeopleInCanvas; // 25
 
     const updated = () => {
         // когда 9 аргументов логика такая
@@ -195,11 +195,43 @@ const useAnimationObject = ({
         })
     }
 
-    // прыжок объекта на заданую высоту
-    const changePositionYPeopleInCanvas = newValue => {
-        console.log(newValue);
-        positionYPeopleInCanvas = newValue;
+    // направление прыжка
+    var up = true;
+    // чтобы прыгнуть один раз
+    var jumpCount = 0;
+
+    // функция прыжка
+    const changePositionYPeopleInCanvas = () => {
+        function dec() {
+            if (positionYPeopleInCanvas < 0) {
+                up = false;
+                positionYPeopleInCanvas = 0;
+                return;
+            }
+            positionYPeopleInCanvas -= 0.5;
+        }
+
+        function inc() {
+            if (positionYPeopleInCanvas > 25) {
+                up = true;
+                positionYPeopleInCanvas = 25;
+                jumpCount++; // чтобы совершить прыжок один раз
+                return;
+            }
+            positionYPeopleInCanvas += 0.5;
+        }
+
+        if (up) {
+            dec();
+        } else {
+            inc();
+        }
+
+        return jumpCount;
     }
+
+    // чтобы счетчик сбить и прыгать можно было не один раз
+    const resetJumpCount = () => jumpCount = 0;
 
     return {
         updated,
@@ -208,6 +240,7 @@ const useAnimationObject = ({
         changeSpeedAnimation,
         thePictureIsReady,
         changePositionYPeopleInCanvas,
+        resetJumpCount,
     };
 }
 
