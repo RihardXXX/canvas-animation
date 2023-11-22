@@ -1,28 +1,11 @@
+/** @type {HTMLCanvasElement} */
+
 console.log('script connection');
 
+import { checkPlatform } from "./platform.js";
 import { animationState } from "./data.js";
-import { 
-    getItemByKeyCode, 
-    getItemByClass, 
-    useLayer,
-    useAnimationObject, 
-} from "./utils.js";
-
-// size type
-let desktop;
-let tablet;
-let mobile;
-
-if (document) {
-    const width = document.documentElement.clientWidth;
-    if (width <= 650) {
-        mobile = true;
-    } else if ((width > 650) && (width < 1024)) {
-        tablet = true;
-    } else {
-        desktop = true;
-    }
-}
+import { getItemByKeyCode, getItemByClass } from "./utils.js";
+import { useAnimationObject, useLayer } from './hooks.js';
 
 // размеры канваса внутри
 const CANVAS_WIDTH = 600;
@@ -43,7 +26,8 @@ let stageFrame = 12.5; // погрешность
 let countFrame = 12 // количество кадров анимации в спрайте
 const heightPeople = 150; // высота человека в канвасе после вырезания из спрайта
 const widthPeople = 100; // ширина человека в канвасе после вырезания из спрайта
-const positionXPeopleInCanvas = Math.floor(CANVAS_WIDTH / 2) - Math.floor(widthPeople / 2); // позиция человека в канвасе ширину канваса делим на 2 и минусуем ширину человека делим на 2
+// позиция человека в канвасе ширину канваса делим на 2 и минусуем ширину человека делим на 2
+const positionXPeopleInCanvas = Math.floor(CANVAS_WIDTH / 2) - Math.floor(widthPeople / 2); 
 let positionYPeopleInCanvas = 25; // пересчитаем высоту относительно первого слоя земли позже
 
 
@@ -107,54 +91,64 @@ const speed = document.querySelector('.range');
 const showSpeed = document.querySelector('.showSpeed');
 
 
-if (desktop) {
-    console.log('desktop');
-    // анимация и слой
-    navigation.addEventListener('mousedown', startHandler);
-    // турбо режим
-    navigation.addEventListener('mousedown', turbo);
-    // прыжок
-    navigation.addEventListener('mousedown', jump);
-
-    navigation.addEventListener('mouseup', e => {
-
-        if (e.target.classList[0] === 'jump') {
-            return;
-        }
-
-        cancelAnimationFrame(reqAnimFrameId);
+// при изменении размера окна проверять какая платформа
+// и переключаем слушатели
+if (window) {
+    window.addEventListener("resize", () => {
+        // проверка платформы и навешивание событий в зависимости от платформы
+        const { desktop, tablet, mobile } = checkPlatform();
+        selectPlatform({ desktop, tablet, mobile });
     });
-
-    document.addEventListener('keydown', e => {
-        startHandler(e, true);
-    });
-
-    document.addEventListener('keyup', e => {
-        // чтобы поднятие клавы сработало разово сработало один раз
-        if (e.repeat) return;
-
-        // отмена анимации
-        cancelAnimationFrame(reqAnimFrameId);
-    });
-
-} else if (tablet || mobile) {
-
-    console.log('tablet || mobile');
-
-    navigation.addEventListener('touchstart', startHandler);
-    navigation.addEventListener('touchstart', turbo);
-    navigation.addEventListener('touchstart', jump);
-
-    navigation.addEventListener('touchend', e => {
-        // if (e.target.classList[0] === 'jump') {
-        //     return;
-        // }
-        // нахождение объекта по классу
-        cancelAnimationFrame(reqAnimFrameId);
-    });
-
 }
 
+// function select platform
+// выбор слушателей событий в зависимости от платформы
+function selectPlatform({ desktop, tablet, mobile }) {
+
+    if (desktop) {
+        console.log('desktop');
+        // анимация и слой
+        navigation.addEventListener('mousedown', startHandler);
+        // турбо режим
+        navigation.addEventListener('mousedown', turbo);
+        // прыжок
+        navigation.addEventListener('mousedown', jump);
+        navigation.addEventListener('mouseup', e => {
+            if (e.target.classList[0] === 'jump') {
+                return;
+            }
+            cancelAnimationFrame(reqAnimFrameId);
+        });
+    
+        document.addEventListener('keydown', e => {
+            startHandler(e, true);
+        });
+    
+        document.addEventListener('keyup', e => {
+            // чтобы поднятие клавы сработало разово сработало один раз
+            if (e.repeat) return;
+            // отмена анимации
+            cancelAnimationFrame(reqAnimFrameId);
+        });
+    
+    } else if (tablet || mobile) {
+        console.log('tablet || mobile');
+        navigation.addEventListener('touchstart', startHandler);
+        navigation.addEventListener('touchstart', turbo);
+        navigation.addEventListener('touchstart', jump);
+        navigation.addEventListener('touchend', e => {
+            // if (e.target.classList[0] === 'jump') {
+            //     return;
+            // }
+            // нахождение объекта по классу
+            cancelAnimationFrame(reqAnimFrameId);
+        });
+    }
+}
+
+// проверка платформы и навешивание событий в зависимости от платформы
+const { desktop, tablet, mobile } = checkPlatform();
+selectPlatform({ desktop, tablet, mobile });
 
 //  тут выбираем скорость анимации
 speed.addEventListener('change', e => {
@@ -222,7 +216,11 @@ function jump(e) {
 
 
     animateJump();
-    animate();
+
+    // для мобилки включаем
+    if (tablet || mobile) {
+        animate();
+    }
 }
 
 // турбо режим срабатывает при удержании
@@ -235,27 +233,24 @@ function turbo(e) {
 
 var reqAnimFrameId;
 
+// массив объектов со слоями и данными
+const listObjects = [
+    sky,
+    city,
+    people,
+    earth,
+]
+
 // запуск анимаций всех
 function animate() {
 
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT); // очистка всего канваса 60 раз в секунду
 
-    // анимация неба
-    sky.drawImage();
-    sky.updated();
-
-    // анимация заднего фона города
-    city.drawImage();
-    city.updated();
-
-    // когда 9 аргументов логика такая
-    // персонаж
-    people.drawImage();
-    people.updated();
-
-    // движение земли
-    earth.drawImage();
-    earth.updated();
+    // движение всех слоев и объектов сразу
+    listObjects.forEach(object => {
+        object.drawImage();
+        object.updated();
+    });
     
     reqAnimFrameId = requestAnimationFrame(animate);
 }
@@ -266,11 +261,14 @@ var reqAnimFrameIdJump;
 function animateJump() {
     // стираем только область человека в прыжке
     ctx.clearRect(    
-        positionXPeopleInCanvas,
-        positionYPeopleInCanvas,
-        widthPeople,
         0,
+        0,
+        CANVAS_WIDTH, 
+        CANVAS_HEIGHT
     ); // очистка всего канваса 60 раз в секунду
+
+    // после прыжка чтобы фон не терялся
+    listObjects.forEach(item => item.drawImage());
     
     const countJump = people.changePositionYPeopleInCanvas();
 
@@ -288,21 +286,10 @@ function animateJump() {
 }
 
 // картинки когда будут готовы можно сделать первый рендер
-Promise.all([
-    sky.thePictureIsReady(),
-    city.thePictureIsReady(),
-    people.thePictureIsReady(),
-    earth.thePictureIsReady(),
-])
+Promise.all(listObjects.map(item => item.thePictureIsReady()))
     .then(() => {
-        // анимация неба
-        sky.drawImage();
-        // город
-        city.drawImage();
-        // персонаж
-        people.drawImage();
-        // движение земли
-        earth.drawImage();
+        // когда картинки готовы запускаем первый рендер
+        listObjects.forEach(item => item.drawImage());
     })
     .catch(() => {
         console.error('first render error');
