@@ -4,8 +4,8 @@ console.log('script connection');
 
 import { checkPlatform } from "./platform.js";
 import { animationState } from "./data.js";
-import { getItemByKeyCode, getItemByClass } from "./utils.js";
-import { useAnimationObject, useLayer } from './hooks.js';
+import { getItemByKeyCode, getItemByClass, getRandomInt } from "./utils.js";
+import { useAnimationObject, useLayer, useMonster } from './hooks.js';
 
 // размеры канваса внутри
 const CANVAS_WIDTH = 600;
@@ -83,6 +83,9 @@ const earth = useLayer({
     widthImage: 2400,
     heightImage: 720,
 });
+
+// создание монстров
+const monster1 = useMonster({ imageUrl: './assets/monster1.png', ctxCanvas: ctx }); 
 
 
 
@@ -239,6 +242,7 @@ const listObjects = [
     city,
     people,
     earth,
+    monster1,
 ]
 
 // запуск анимаций всех

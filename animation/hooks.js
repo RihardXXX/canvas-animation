@@ -1,5 +1,7 @@
-
+import { getRandomInt } from "./utils.js";
 // хуки слоев и их движение
+
+// земля, небо, город
 const useLayer = ({ 
     imageUrl, 
     speed, 
@@ -97,6 +99,7 @@ const useLayer = ({
 };
 
 // хуки анимации объектов
+// человек
 const useAnimationObject = ({ 
         imageUrl, 
         ctxCanvas, 
@@ -210,7 +213,69 @@ const useAnimationObject = ({
     };
 }
 
+
+// функция для создания монстров
+
+const useMonster = ({ imageUrl, ctxCanvas }) => {
+    // некоторые данные будут захардкодены
+
+    let gameFrame = 0; // общий счетчик который увеличивается при кадрировании 60 кадров в секунду
+    let stageFrame = getRandomInt(2, 12); // погрешность
+    const countFrame = 6;
+    let positionXInImage = 0; 
+    let positionYInImage = 0; 
+    const widthFrameImageCut = 293;
+    const heightFrameImageCut = 155;
+    let positionXMonsterInCanvas = 0;
+    let positionYMonsterInCanvas = 0;
+    const widthCutImageByCanvas = 80;
+    const heightCutImageByCanvas = 50;
+
+
+
+    // работа с изображением создание и степень готовности
+    const image = new Image();
+    image.src = imageUrl;
+
+    // состояние что картинка готова
+    const thePictureIsReady = async  () => {
+        return new Promise(resolve => {
+            image.onload = function() {
+                resolve();
+            }
+        })
+    }
+
+    // обновление координат
+    const updated = () => {
+        positionXInImage = Math.floor(gameFrame / stageFrame) % countFrame;
+        gameFrame++;
+    }
+
+    // рисование на холсте
+    const drawImage = () => {
+        ctxCanvas.drawImage(
+            image, // сама картинка спрайт общая
+            positionXInImage * widthFrameImageCut, // сдвиг по оси Х кадра спрайта для среза картинки (точка Х)
+            positionYInImage, // тип анимации персонажа сдвиг по оси Y для среза (точка У)
+            widthFrameImageCut, // ширина которую нужно срезать в картинке спрайта относительно Х
+            heightFrameImageCut, // высота которую нужно срезать относительно Y
+            positionXMonsterInCanvas, // итоговая картинка куда будет положена в канвасе по оси Х
+            positionYMonsterInCanvas, // итоговая картинка куда будет положена в канвасе по оси У
+            widthCutImageByCanvas, // ширина срезанной картинки
+            heightCutImageByCanvas, // высота срезанной картинки 
+        );
+    }
+
+    return {
+        thePictureIsReady,
+        updated,
+        drawImage,
+    }
+}
+
 export {
     useAnimationObject,
     useLayer,
+    useMonster,
 }
