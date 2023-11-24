@@ -216,7 +216,7 @@ const useAnimationObject = ({
 
 // функция для создания монстров
 
-const useMonster = ({ imageUrl, ctxCanvas }) => {
+const useMonster = ({ imageUrl, ctxCanvas, reverse }) => {
     // некоторые данные будут захардкодены
 
     let gameFrame = 0; // общий счетчик который увеличивается при кадрировании 60 кадров в секунду
@@ -226,10 +226,12 @@ const useMonster = ({ imageUrl, ctxCanvas }) => {
     let positionYInImage = 0; 
     const widthFrameImageCut = 293;
     const heightFrameImageCut = 155;
-    let positionXMonsterInCanvas = 0;
-    let positionYMonsterInCanvas = 0;
-    const widthCutImageByCanvas = 80;
-    const heightCutImageByCanvas = 50;
+    let positionXMonsterInCanvas = getRandomInt(600, 1200);
+    let positionYMonsterInCanvas = getRandomInt(0, 250);
+    const widthCutImageByCanvas = 60;
+    const heightCutImageByCanvas = 40;
+    const speed = 2.5 * Math.random();
+    let upOrDown = getRandomInt(1, 2) === 1; // изначальное направление движения монстра
 
 
 
@@ -248,7 +250,50 @@ const useMonster = ({ imageUrl, ctxCanvas }) => {
 
     // обновление координат
     const updated = () => {
+        // тут анимация
         positionXInImage = Math.floor(gameFrame / stageFrame) % countFrame;
+
+        // а тут движение монстра
+        // 
+        if (reverse) {
+            if (positionXMonsterInCanvas === -60) {
+                positionXMonsterInCanvas = 1200
+            }
+            positionXMonsterInCanvas += speed;
+            if (upOrDown) {
+                positionYMonsterInCanvas += speed;
+            } else {
+                positionYMonsterInCanvas -= speed;
+            }
+
+            if (positionYMonsterInCanvas < -40) {
+                positionYMonsterInCanvas = 0;
+                upOrDown = !upOrDown;
+            }
+            if (positionYMonsterInCanvas > 290) {
+                positionYMonsterInCanvas = 250;
+                upOrDown = !upOrDown;
+            }
+        } else {
+            if (positionXMonsterInCanvas === -60) {
+                positionXMonsterInCanvas = 1200
+            }
+            positionXMonsterInCanvas -= speed;
+            if (upOrDown) {
+                positionYMonsterInCanvas -= speed;
+            } else {
+                positionYMonsterInCanvas += speed;
+            }
+
+            if (positionYMonsterInCanvas < -40) {
+                positionYMonsterInCanvas = 0;
+                upOrDown = !upOrDown;
+            }
+            if (positionYMonsterInCanvas > 290) {
+                positionYMonsterInCanvas = 250;
+                upOrDown = !upOrDown;
+            }
+        }
         gameFrame++;
     }
 
@@ -267,10 +312,16 @@ const useMonster = ({ imageUrl, ctxCanvas }) => {
         );
     }
 
+    // изменить направление движения слоя
+    const setReverse = status => {
+        reverse = status;
+    }
+
     return {
         thePictureIsReady,
         updated,
         drawImage,
+        setReverse,
     }
 }
 

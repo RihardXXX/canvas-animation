@@ -85,8 +85,10 @@ const earth = useLayer({
 });
 
 // создание монстров
-const monster1 = useMonster({ imageUrl: './assets/monster1.png', ctxCanvas: ctx }); 
-
+const listMonsters = [];
+for (let i= 0; i < 5; i++) {
+    listMonsters.push(useMonster({ imageUrl: './assets/monster1.png', ctxCanvas: ctx }));
+}
 
 
 const navigation = document.querySelector('.navigation');
@@ -198,12 +200,14 @@ function startHandler(e, isKeyboard) {
     if (item.name === 'left') {
         earth.setReverse(true);
         city.setReverse(true);
+        listMonsters.forEach(monster => monster.setReverse(true));
         animate();
     }
 
     if (item.name === 'right') {
         earth.setReverse(false);
         city.setReverse(false);
+        listMonsters.forEach(monster => monster.setReverse(false));
         animate();
     }
 }
@@ -240,9 +244,9 @@ var reqAnimFrameId;
 const listObjects = [
     sky,
     city,
-    people,
     earth,
-    monster1,
+    ...listMonsters,
+    people,
 ]
 
 // запуск анимаций всех
