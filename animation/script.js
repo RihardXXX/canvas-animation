@@ -86,7 +86,7 @@ const earth = useLayer({
 
 // создание монстров
 const listMonsters = [];
-for (let i= 0; i < 5; i++) {
+for (let i= 0; i < 10; i++) {
     listMonsters.push(useMonster({ imageUrl: './assets/monster1.png', ctxCanvas: ctx }));
 }
 
@@ -134,6 +134,7 @@ function selectPlatform({ desktop, tablet, mobile }) {
             if (e.repeat) return;
             // отмена анимации
             cancelAnimationFrame(reqAnimFrameId);
+            // cancelAnimationFrame(reqAnimFrameMonster);
         });
     
     } else if (tablet || mobile) {
@@ -196,20 +197,27 @@ function startHandler(e, isKeyboard) {
     countFrame = item.count; // 12
     typeAnimation = item.index * heightFrame; // 0 * 160, 1 * 160, 2 * 160, 3 * 160 по оси Y
     people.changeTypeAnimation(typeAnimation);
+
+    // останавливаем анимацию монстров первого рендера
+    cancelAnimationFrame(reqAnimFrameMonster);
+
     // если выбрано левое направление меняем движение слоя
     if (item.name === 'left') {
         earth.setReverse(true);
         city.setReverse(true);
-        listMonsters.forEach(monster => monster.setReverse(true));
+        // listMonsters.forEach(monster => monster.setReverse(true));
         animate();
+        animateMonster();
     }
 
     if (item.name === 'right') {
         earth.setReverse(false);
         city.setReverse(false);
-        listMonsters.forEach(monster => monster.setReverse(false));
+        // listMonsters.forEach(monster => monster.setReverse(false));
         animate();
+        animateMonster();
     }
+    console.log('xxx');
 }
 
 
@@ -222,7 +230,9 @@ function jump(e) {
     console.log('jump');
 
 
+    cancelAnimationFrame(reqAnimFrameMonster);
     animateJump();
+    animateMonster();
 
     // для мобилки включаем
     if (tablet || mobile) {
@@ -233,7 +243,9 @@ function jump(e) {
 // турбо режим срабатывает при удержании
 function turbo(e) {
     if (e.target.classList[0] === 'turbo') {
+        cancelAnimationFrame(reqAnimFrameMonster);
         animate();
+        animateMonster();
         return;
     }
 }
@@ -245,7 +257,7 @@ const listObjects = [
     sky,
     city,
     earth,
-    ...listMonsters,
+    // ...listMonsters,
     people,
 ]
 
@@ -293,11 +305,52 @@ function animateJump() {
     reqAnimFrameIdJump = requestAnimationFrame(animateJump);
 }
 
+var reqAnimFrameMonster;
+// анимация монстров движения в отдельном потоке
+function animateMonster() {
+
+    if (!reqAnimFrameId || !reqAnimFrameIdJump) {
+        ctx.clearRect(    
+            0,
+            0,
+            CANVAS_WIDTH, 
+            CANVAS_HEIGHT
+        ); // очистка всего канваса 60 раз в секунду
+
+        // движение всех слоев и объектов сразу
+        listObjects.forEach(object => {
+            object.drawImage();
+            // object.updated();
+        });
+    } else if (reqAnimFrameIdJump) {
+        ctx.clearRect(    
+            0,
+            0,
+            CANVAS_WIDTH, 
+            CANVAS_HEIGHT
+        ); // очистка всего канваса 60 раз в секунду
+
+        // движение всех слоев и объектов сразу
+        listObjects.forEach(object => {
+            object.drawImage();
+            // object.updated();
+        });
+    }
+
+    listMonsters.forEach(monster => {
+        monster.updated();
+        monster.drawImage();
+    })
+
+    reqAnimFrameMonster = requestAnimationFrame(animateMonster);
+}
+
 // картинки когда будут готовы можно сделать первый рендер
 Promise.all(listObjects.map(item => item.thePictureIsReady()))
     .then(() => {
         // когда картинки готовы запускаем первый рендер
         listObjects.forEach(item => item.drawImage());
+        animateMonster();
     })
     .catch(() => {
         console.error('first render error');

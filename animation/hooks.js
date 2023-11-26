@@ -231,7 +231,11 @@ const useMonster = ({ imageUrl, ctxCanvas, reverse }) => {
     const widthCutImageByCanvas = 60;
     const heightCutImageByCanvas = 40;
     const speed = 2.5 * Math.random();
-    let upOrDown = getRandomInt(1, 2) === 1; // изначальное направление движения монстра
+    // let upOrDown = getRandomInt(1, 2) === 1; // изначальное направление движения монстра
+    let angle = Math.random() * 2; // угол наклона в радианах для волнового движения момент
+    let angleSpeed = Math.random() * 0.3; // угол увеличения
+    // Sin синус угла A равняется делению стороны A (катет) / C (гипотенуза)
+
 
 
 
@@ -253,47 +257,16 @@ const useMonster = ({ imageUrl, ctxCanvas, reverse }) => {
         // тут анимация
         positionXInImage = Math.floor(gameFrame / stageFrame) % countFrame;
 
-        // а тут движение монстра
-        // 
-        if (reverse) {
-            if (positionXMonsterInCanvas === -60) {
-                positionXMonsterInCanvas = 1200
-            }
-            positionXMonsterInCanvas += speed;
-            if (upOrDown) {
-                positionYMonsterInCanvas += speed;
-            } else {
-                positionYMonsterInCanvas -= speed;
-            }
-
-            if (positionYMonsterInCanvas < -40) {
-                positionYMonsterInCanvas = 0;
-                upOrDown = !upOrDown;
-            }
-            if (positionYMonsterInCanvas > 290) {
-                positionYMonsterInCanvas = 250;
-                upOrDown = !upOrDown;
-            }
-        } else {
-            if (positionXMonsterInCanvas === -60) {
-                positionXMonsterInCanvas = 1200
-            }
-            positionXMonsterInCanvas -= speed;
-            if (upOrDown) {
-                positionYMonsterInCanvas -= speed;
-            } else {
-                positionYMonsterInCanvas += speed;
-            }
-
-            if (positionYMonsterInCanvas < -40) {
-                positionYMonsterInCanvas = 0;
-                upOrDown = !upOrDown;
-            }
-            if (positionYMonsterInCanvas > 290) {
-                positionYMonsterInCanvas = 250;
-                upOrDown = !upOrDown;
-            }
+        // движение по оси X
+        if (positionXMonsterInCanvas < -60) {
+            positionXMonsterInCanvas = 1200;
         }
+        positionXMonsterInCanvas -= speed;
+
+        // углы движения и кривая синусоидная по оси Y
+        positionYMonsterInCanvas += getRandomInt(1, 6) * Math.sin(angle); // синус угла
+        angle += angleSpeed; // тут шаг угла меняем
+
         gameFrame++;
     }
 
