@@ -237,6 +237,7 @@ function jump(e) {
     // для мобилки включаем
     if (tablet || mobile) {
         animate();
+        cancelAnimationFrame(reqAnimFrameMonster);
         animateMonster();
     }
 }
