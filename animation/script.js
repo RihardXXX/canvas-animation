@@ -230,14 +230,19 @@ function jump(e) {
     console.log('jump');
 
 
-    cancelAnimationFrame(reqAnimFrameMonster);
-    animateJump();
-    animateMonster();
+    // cancelAnimationFrame(reqAnimFrameMonster);
+    // animateJump();
+    // animateMonster();
 
     // для мобилки включаем
     if (tablet || mobile) {
         animate();
         cancelAnimationFrame(reqAnimFrameMonster);
+        animateJump();
+        animateMonster();
+    } else {
+        cancelAnimationFrame(reqAnimFrameMonster);
+        animateJump();
         animateMonster();
     }
 }
