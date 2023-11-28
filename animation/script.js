@@ -363,3 +363,5 @@ Promise.all(listObjects.map(item => item.thePictureIsReady()))
         console.error('first render error');
     })
 
+
+    
