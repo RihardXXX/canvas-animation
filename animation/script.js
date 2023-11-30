@@ -4,7 +4,7 @@ console.log('script connection');
 
 import { checkPlatform } from "./platform.js";
 import { animationState } from "./data.js";
-import { getItemByKeyCode, getItemByClass, getRandomInt } from "./utils.js";
+import { getItemByKeyCode, getItemByClass, getRandomInt, coincidenceRectangle } from "./utils.js";
 import { useAnimationObject, useLayer, useMonster } from './hooks.js';
 
 // размеры канваса внутри
@@ -349,6 +349,25 @@ function animateMonster() {
         monster.drawImage();
     })
 
+    // тут будем при движении монстров сравнивать касаются ли они человека
+    const people = listObjects[3];
+    // console.log(people.positionXPeopleInCanvas);
+    console.log(people.getPositionYJump());
+    console.log(people.getPositionXJump());
+
+    // const isCoincidence = coincidenceRectangle({
+    //     mainObject: {
+    //         x: people.getPositionXJump(), 
+    //         y: people.getPositionXJump(), 
+    //         width: people.getWidthOnCanvas(), 
+    //         height: people.getHeightOnCanvas(),
+    //     },
+    //     otherObjects: [],
+    // });
+
+    // console.log('super: ', isCoincidence);
+
+
     reqAnimFrameMonster = requestAnimationFrame(animateMonster);
 }
 
@@ -364,4 +383,3 @@ Promise.all(listObjects.map(item => item.thePictureIsReady()))
     })
 
 
-    

@@ -121,9 +121,6 @@ const useAnimationObject = ({
     // для анимации движения внутри спрайта шаг X
     let positionX = 0;
 
-    // для прыжка персонажа регулировка по оси Y на самом канвасе
-    let positionYJump = positionYPeopleInCanvas; // 25
-
     const updated = () => {
         // когда 9 аргументов логика такая
         // персонаж
@@ -172,9 +169,9 @@ const useAnimationObject = ({
     // функция прыжка
     const changePositionYPeopleInCanvas = () => {
         function dec() {
-            if (positionYPeopleInCanvas < 0) {
+            if (positionYPeopleInCanvas < -25) {
                 up = false;
-                positionYPeopleInCanvas = 0;
+                positionYPeopleInCanvas = -25;
                 return;
             }
             positionYPeopleInCanvas -= 0.5;
@@ -200,7 +197,14 @@ const useAnimationObject = ({
     }
 
     // чтобы счетчик сбить и прыгать можно было не один раз
-    const resetJumpCount = () => jumpCount = 0;
+    var resetJumpCount = () => jumpCount = 0;
+
+    // из замыкания получаемый примитивный тип
+    // если бы был объектом то можно было тупо на переменную ссылаться
+    var getPositionYJump = () => positionYPeopleInCanvas;
+    var getPositionXJump = () => positionXPeopleInCanvas;
+    var getWidthOnCanvas = () => widthCutImageByCanvas;
+    var getHeightOnCanvas = () => heightCutImageBYCanvas;
 
     return {
         updated,
@@ -210,6 +214,10 @@ const useAnimationObject = ({
         thePictureIsReady,
         changePositionYPeopleInCanvas,
         resetJumpCount,
+        getPositionYJump,
+        getPositionXJump,
+        getWidthOnCanvas,
+        getHeightOnCanvas,
     };
 }
 
@@ -227,13 +235,14 @@ const useMonster = ({ imageUrl, ctxCanvas, reverse }) => {
     const widthFrameImageCut = 293;
     const heightFrameImageCut = 155;
     let positionXMonsterInCanvas = getRandomInt(600, 1200);
-    let positionYMonsterInCanvas = getRandomInt(0, 250);
+    let positionYMonsterInCanvas = getRandomInt(150, 170);
+    // let positionYMonsterInCanvas = 160;
     const widthCutImageByCanvas = 60;
     const heightCutImageByCanvas = 40;
     const speed = 2.5 * Math.random();
     // let upOrDown = getRandomInt(1, 2) === 1; // изначальное направление движения монстра
     let angle = Math.random() * 2; // угол наклона в радианах для волнового движения момент
-    let angleSpeed = Math.random() * 0.3; // угол увеличения
+    let angleSpeed = Math.random() * 0.5; // угол увеличения
     // Sin синус угла A равняется делению стороны A (катет) / C (гипотенуза)
 
 
@@ -264,8 +273,9 @@ const useMonster = ({ imageUrl, ctxCanvas, reverse }) => {
         positionXMonsterInCanvas -= speed;
 
         // углы движения и кривая синусоидная по оси Y
-        positionYMonsterInCanvas += getRandomInt(1, 6) * Math.sin(angle); // синус угла
+        positionYMonsterInCanvas += getRandomInt(1, 2) * Math.sin(angle); // синус угла
         angle += angleSpeed; // тут шаг угла меняем
+        // angle += 0.2; // тут шаг угла меняем
 
         gameFrame++;
     }
