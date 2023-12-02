@@ -25,7 +25,7 @@ let gameFrame = 0; // общий счетчик который увеличив�
 let stageFrame = 12.5; // погрешность
 let countFrame = 12 // количество кадров анимации в спрайте
 const heightPeople = 150; // высота человека в канвасе после вырезания из спрайта
-const widthPeople = 100; // ширина человека в канвасе после вырезания из спрайта
+const widthPeople = 80; // ширина человека в канвасе после вырезания из спрайта
 // позиция человека в канвасе ширину канваса делим на 2 и минусуем ширину человека делим на 2
 const positionXPeopleInCanvas = Math.floor(CANVAS_WIDTH / 2) - Math.floor(widthPeople / 2); 
 let positionYPeopleInCanvas = 25; // пересчитаем высоту относительно первого слоя земли позже
@@ -86,7 +86,7 @@ const earth = useLayer({
 
 // создание монстров
 const listMonsters = [];
-for (let i= 0; i < 10; i++) {
+for (let i= 0; i < 8; i++) {
     listMonsters.push(useMonster({ imageUrl: './assets/monster1.png', ctxCanvas: ctx }));
 }
 
@@ -217,7 +217,6 @@ function startHandler(e, isKeyboard) {
         animate();
         animateMonster();
     }
-    console.log('xxx');
 }
 
 
@@ -351,21 +350,38 @@ function animateMonster() {
 
     // тут будем при движении монстров сравнивать касаются ли они человека
     const people = listObjects[3];
-    // console.log(people.positionXPeopleInCanvas);
-    console.log(people.getPositionYJump());
-    console.log(people.getPositionXJump());
+    // console.log(people.positionXPeopleInCanvas());
+    // console.log(people.getPositionXJump());
+    // console.log(people.getPositionYJump());
 
-    // const isCoincidence = coincidenceRectangle({
-    //     mainObject: {
-    //         x: people.getPositionXJump(), 
-    //         y: people.getPositionXJump(), 
-    //         width: people.getWidthOnCanvas(), 
-    //         height: people.getHeightOnCanvas(),
-    //     },
-    //     otherObjects: [],
-    // });
+    ctx.strokeStyle = "green";
+    ctx.strokeRect(people.getPositionXJump(), people.getPositionYJump(), people.getWidthOnCanvas(), people.getHeightOnCanvas());
 
-    // console.log('super: ', isCoincidence);
+    listMonsters.forEach(monster => {
+        ctx.strokeRect(monster.getPositionX(),  monster.getPositionY(), monster.getWidth(), monster.getHeight());
+    })
+
+    const isCoincidence = coincidenceRectangle({
+        mainObject: {
+            x: people.getPositionXJump(), 
+            y: people.getPositionYJump(), 
+            width: people.getWidthOnCanvas(), 
+            height: people.getHeightOnCanvas(),
+        },
+        otherObjects: listMonsters.map(monster => ({ 
+            x: monster.getPositionX(), 
+            y: monster.getPositionY(), 
+            width: monster.getWidth(), 
+            height: monster.getHeight(),
+         })),
+    });
+
+    console.log('super: ', isCoincidence);
+
+    if (Boolean(isCoincidence.length)) {
+        cancelAnimationFrame(reqAnimFrameMonster);
+        return;
+    }
 
 
     reqAnimFrameMonster = requestAnimationFrame(animateMonster);

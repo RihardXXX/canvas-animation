@@ -235,7 +235,7 @@ const useMonster = ({ imageUrl, ctxCanvas, reverse }) => {
     const widthFrameImageCut = 293;
     const heightFrameImageCut = 155;
     let positionXMonsterInCanvas = getRandomInt(600, 1200);
-    let positionYMonsterInCanvas = getRandomInt(150, 170);
+    let positionYMonsterInCanvas = getRandomInt(120, 300);
     // let positionYMonsterInCanvas = 160;
     const widthCutImageByCanvas = 60;
     const heightCutImageByCanvas = 40;
@@ -300,11 +300,22 @@ const useMonster = ({ imageUrl, ctxCanvas, reverse }) => {
         reverse = status;
     }
 
+        // из замыкания получаемый примитивный тип
+    // если бы был объектом то можно было тупо на переменную ссылаться
+    var getPositionY = () => positionYMonsterInCanvas;
+    var getPositionX = () => positionXMonsterInCanvas;
+    var getWidth = () => widthCutImageByCanvas;
+    var getHeight = () => heightCutImageByCanvas;
+
     return {
         thePictureIsReady,
         updated,
         drawImage,
         setReverse,
+        getPositionX,
+        getPositionY,
+        getWidth,
+        getHeight,
     }
 }
 

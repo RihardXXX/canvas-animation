@@ -47,29 +47,53 @@ const coincidenceRectangle = ({ mainObject, otherObjects }) => {
         throw new Error('первый аргумент должен быть объектом');
     }
 
-    if (typeof otherObjects !== 'array') {
+    if (!Array.isArray(otherObjects)) {
         throw new Error('второй аргумент должен быть массивом');
     }
 
     // возвращаем объект который коснулся главного объекта
-    let result;
+    // let result;
 
     // тут мы берем координаты главного объекта с которым будем сравнивать 
     const { x: xMain, y: yMain, width: widthMain, height: heightMain } = mainObject;
 
     // тут мы проверяем массив объектов на пересечение с главным объектом
     // сравниваем точку x и точку x + ширину второго объекта
-    otherObjects.forEach(item => {
+    var result = otherObjects.filter(item => {
+        // console.log(yMain);
+        // console.log(item.y);
         if (xMain > item.x + item.width ||
             xMain + widthMain < item.x ||
             yMain > item.y + item.height ||
-            yMain + heightMain < item.height) 
+            yMain + heightMain < item.y) 
         {
             // нет совпадений
+            // console.log('==== not ====')
+            // console.log('xMain > item.x + item.width ', xMain > item.x + item.width);
+            // console.log('xMain + widthMain < item.x: ', xMain + widthMain < item.x);
+            // console.log('yMain > item.y + item.height: ', yMain > item.y + item.height);
+            // console.log('yMain + heightMain < item.height: ', yMain + heightMain < item.height);
+            // console.log('========')
+            return false;
         } else {
+            // console.log('==== yes ====')
+            // console.log('item.x: ', item.x);
+            // console.log('item.y: ', item.y);
+            // console.log('item.width: ', item.width);
+            // console.log('item.height: ', item.height);
+            // console.log('xMain', xMain);
+            // console.log('yMain', yMain);
+            // console.log('widthMain: ', widthMain);
+            // console.log('heightMain: ', heightMain);
+            // console.log('xMain > item.x + item.width ', xMain > item.x + item.width);
+            // console.log('xMain + widthMain < item.x: ', xMain + widthMain < item.x);
+            // console.log('yMain > item.y + item.height: ', yMain > item.y + item.height);
+            // console.log('yMain + heightMain < item.height: ', yMain + heightMain < item.height);
+            console.log('========')
+
+
             // совпало возвращаем совпавший объект
-            result = item;
-            return;
+            return true;
         }
     });
 
@@ -83,7 +107,7 @@ const coincidenceCircle = ({ mainObject, otherObjects })  => {
         throw new Error('первый аргумент должен быть объектом');
     }
 
-    if (typeof otherObjects !== 'array') {
+    if (!Array.isArray(otherObjects)) {
         throw new Error('второй аргумент должен быть массивом');
     }
 
