@@ -59,43 +59,19 @@ const coincidenceRectangle = ({ mainObject, otherObjects }) => {
 
     // тут мы проверяем массив объектов на пересечение с главным объектом
     // сравниваем точку x и точку x + ширину второго объекта
-    var result = otherObjects.filter(item => {
-        // console.log(yMain);
-        // console.log(item.y);
-        if (xMain > item.x + item.width ||
-            xMain + widthMain < item.x ||
-            yMain > item.y + item.height ||
-            yMain + heightMain < item.y) 
-        {
-            // нет совпадений
-            // console.log('==== not ====')
-            // console.log('xMain > item.x + item.width ', xMain > item.x + item.width);
-            // console.log('xMain + widthMain < item.x: ', xMain + widthMain < item.x);
-            // console.log('yMain > item.y + item.height: ', yMain > item.y + item.height);
-            // console.log('yMain + heightMain < item.height: ', yMain + heightMain < item.height);
-            // console.log('========')
-            return false;
-        } else {
-            // console.log('==== yes ====')
-            // console.log('item.x: ', item.x);
-            // console.log('item.y: ', item.y);
-            // console.log('item.width: ', item.width);
-            // console.log('item.height: ', item.height);
-            // console.log('xMain', xMain);
-            // console.log('yMain', yMain);
-            // console.log('widthMain: ', widthMain);
-            // console.log('heightMain: ', heightMain);
-            // console.log('xMain > item.x + item.width ', xMain > item.x + item.width);
-            // console.log('xMain + widthMain < item.x: ', xMain + widthMain < item.x);
-            // console.log('yMain > item.y + item.height: ', yMain > item.y + item.height);
-            // console.log('yMain + heightMain < item.height: ', yMain + heightMain < item.height);
-            console.log('========')
-
-
-            // совпало возвращаем совпавший объект
-            return true;
-        }
-    });
+    var result = otherObjects
+            .filter(item => {
+                if (xMain > item.x + item.width ||
+                    xMain + widthMain < item.x ||
+                    yMain > item.y + item.height ||
+                    yMain + heightMain < item.y) 
+                {
+                    return false;
+                } else {
+                    // совпало возвращаем совпавший объект
+                    return true;
+                }
+            }).map(item => ({ id: item.id }));
 
     return result;
 }
@@ -154,10 +130,18 @@ const coincidenceCircle = ({ mainObject, otherObjects })  => {
     return result;
 }
 
+// генерация уникальных айди
+const uuidv4 = () => {
+    return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
+  }
+
 export {
     getItemByClass,
     getItemByKeyCode,
     getRandomInt,
     coincidenceRectangle,
     coincidenceCircle,
+    uuidv4,
 }

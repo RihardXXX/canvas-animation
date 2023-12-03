@@ -4,7 +4,12 @@ console.log('script connection');
 
 import { checkPlatform } from "./platform.js";
 import { animationState } from "./data.js";
-import { getItemByKeyCode, getItemByClass, getRandomInt, coincidenceRectangle } from "./utils.js";
+import { 
+    getItemByKeyCode, 
+    getItemByClass, 
+    coincidenceRectangle, 
+    uuidv4 
+} from "./utils.js";
 import { useAnimationObject, useLayer, useMonster } from './hooks.js';
 
 // размеры канваса внутри
@@ -85,15 +90,17 @@ const earth = useLayer({
 });
 
 // создание монстров
-const listMonsters = [];
-for (let i= 0; i < 8; i++) {
-    listMonsters.push(useMonster({ imageUrl: './assets/monster1.png', ctxCanvas: ctx }));
+let listMonsters = [];
+
+for (let i= 0; i < 10; i++) {
+    listMonsters.push(useMonster({ imageUrl: './assets/monster1.png', ctxCanvas: ctx, id: uuidv4() }));
 }
 
-
+// элементы дом к которому цепляемся
 const navigation = document.querySelector('.navigation');
 const speed = document.querySelector('.range');
 const showSpeed = document.querySelector('.showSpeed');
+const monsterCount = document.querySelector('.monster__count span');
 
 
 // при изменении размера окна проверять какая платформа
@@ -311,7 +318,10 @@ function animateJump() {
     reqAnimFrameIdJump = requestAnimationFrame(animateJump);
 }
 
+// анимация для монстров
 var reqAnimFrameMonster;
+// количество касаний за минуту
+var isCoincidence = [];
 // анимация монстров движения в отдельном потоке
 function animateMonster() {
 
@@ -350,9 +360,6 @@ function animateMonster() {
 
     // тут будем при движении монстров сравнивать касаются ли они человека
     const people = listObjects[3];
-    // console.log(people.positionXPeopleInCanvas());
-    // console.log(people.getPositionXJump());
-    // console.log(people.getPositionYJump());
 
     ctx.strokeStyle = "green";
     ctx.strokeRect(people.getPositionXJump(), people.getPositionYJump(), people.getWidthOnCanvas(), people.getHeightOnCanvas());
@@ -361,7 +368,7 @@ function animateMonster() {
         ctx.strokeRect(monster.getPositionX(),  monster.getPositionY(), monster.getWidth(), monster.getHeight());
     })
 
-    const isCoincidence = coincidenceRectangle({
+    let result = coincidenceRectangle({
         mainObject: {
             x: people.getPositionXJump(), 
             y: people.getPositionYJump(), 
@@ -373,14 +380,23 @@ function animateMonster() {
             y: monster.getPositionY(), 
             width: monster.getWidth(), 
             height: monster.getHeight(),
+            id: monster.getId(),
          })),
     });
 
-    console.log('super: ', isCoincidence);
+    if (Boolean(result.length)) {
+        const monsterSuper = result[0];
+        // удаляем из общего списка монстров монстра который тронул человека
+        listMonsters = listMonsters.filter(monster => monster.getId() !== monsterSuper.id);
+        // добавляем в список совпадений для количества попаданий
+        isCoincidence.push(monsterSuper);
+        // создаем нового монстра и кладем его в список монстров, чтобы количество монстров не уменьшалось
+        listMonsters.push(useMonster({ imageUrl: './assets/monster1.png', ctxCanvas: ctx, id: uuidv4() }));
+        // увеличиваем количество попаданий монстров в счетчике
+        monsterCount.textContent = Number(isCoincidence.length);
 
-    if (Boolean(isCoincidence.length)) {
-        cancelAnimationFrame(reqAnimFrameMonster);
-        return;
+        // cancelAnimationFrame(reqAnimFrameMonster);
+        // return;
     }
 
 

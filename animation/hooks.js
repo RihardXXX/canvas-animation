@@ -169,18 +169,18 @@ const useAnimationObject = ({
     // функция прыжка
     const changePositionYPeopleInCanvas = () => {
         function dec() {
-            if (positionYPeopleInCanvas < -25) {
+            if (positionYPeopleInCanvas < -50) {
                 up = false;
-                positionYPeopleInCanvas = -25;
+                positionYPeopleInCanvas = -50;
                 return;
             }
             positionYPeopleInCanvas -= 0.5;
         }
 
         function inc() {
-            if (positionYPeopleInCanvas > 25) {
+            if (positionYPeopleInCanvas > 20) {
                 up = true;
-                positionYPeopleInCanvas = 25;
+                positionYPeopleInCanvas = 20;
                 jumpCount++; // чтобы совершить прыжок один раз
                 return;
             }
@@ -224,7 +224,7 @@ const useAnimationObject = ({
 
 // функция для создания монстров
 
-const useMonster = ({ imageUrl, ctxCanvas, reverse }) => {
+const useMonster = ({ imageUrl, ctxCanvas, reverse, id }) => {
     // некоторые данные будут захардкодены
 
     let gameFrame = 0; // общий счетчик который увеличивается при кадрировании 60 кадров в секунду
@@ -235,7 +235,7 @@ const useMonster = ({ imageUrl, ctxCanvas, reverse }) => {
     const widthFrameImageCut = 293;
     const heightFrameImageCut = 155;
     let positionXMonsterInCanvas = getRandomInt(600, 1200);
-    let positionYMonsterInCanvas = getRandomInt(120, 300);
+    let positionYMonsterInCanvas = getRandomInt(80, 300);
     // let positionYMonsterInCanvas = 160;
     const widthCutImageByCanvas = 60;
     const heightCutImageByCanvas = 40;
@@ -306,6 +306,7 @@ const useMonster = ({ imageUrl, ctxCanvas, reverse }) => {
     var getPositionX = () => positionXMonsterInCanvas;
     var getWidth = () => widthCutImageByCanvas;
     var getHeight = () => heightCutImageByCanvas;
+    var getId = () => id;
 
     return {
         thePictureIsReady,
@@ -316,6 +317,7 @@ const useMonster = ({ imageUrl, ctxCanvas, reverse }) => {
         getPositionY,
         getWidth,
         getHeight,
+        getId,
     }
 }
 
