@@ -101,6 +101,11 @@ const navigation = document.querySelector('.navigation');
 const speed = document.querySelector('.range');
 const showSpeed = document.querySelector('.showSpeed');
 const monsterCount = document.querySelector('.monster__count span');
+const timerElement = document.querySelector('.timer span');
+const helpText = document.querySelector('.help__text');
+
+// запуск таймера игры
+// timerGame(59, timerElement);
 
 
 // при изменении размера окна проверять какая платформа
@@ -404,14 +409,99 @@ function animateMonster() {
 }
 
 // картинки когда будут готовы можно сделать первый рендер
-Promise.all(listObjects.map(item => item.thePictureIsReady()))
-    .then(() => {
-        // когда картинки готовы запускаем первый рендер
+async function firstRenderImage(listObjects, animateMonster) {
+    return new Promise(resolve => {
         listObjects.forEach(item => item.drawImage());
         animateMonster();
+        resolve();
     })
-    .catch(() => {
-        console.error('first render error');
-    })
+}
 
 
+// старт таймера
+function timerGame(seconds, element) {
+    var idTimer = setInterval(() => {
+
+        element.textContent = seconds < 10 
+                                ? `0${seconds}` 
+                                : seconds;
+        seconds--;
+
+        if (seconds < 0) {
+            clearInterval(idTimer);
+        }
+
+    }, 1000);
+}
+
+// приветственный текст к началу игры
+async function disabledElementsToggle(...elements) {
+    if (!elements.length) {
+        return;
+    }
+
+    return new Promise(resolve => {
+        elements.forEach(element => {
+            element.classList.toggle('disabled__element');
+        });
+        resolve();
+    })
+}
+
+// запуск функция поочереди
+async function startGame(fns) {
+    if (!fns.length) {
+        return;
+    }
+
+    // асинхронный вызов функций с ожиданием
+    for (const fn of fns) {
+        await fn();
+    }
+}
+
+// изменение приветственного текста
+function changeHelpText(elem, count) {
+    if (!elem) {
+        return;
+    }
+
+    return new Promise(resolve => {
+        var idInterval = setInterval(() => {
+            if (count === 0) {
+                clearInterval(idInterval);
+                resolve();
+            }
+    
+            // elem.classList.toggle('test');
+            elem.innerHTML = `<span class="help__text heart">${count}</span>`;
+            count--;
+        }, 1000);
+    });
+}
+
+// прячем текст помощи
+function hiddenHelpText(elem) {
+    if (!elem) {
+        return;
+    }
+
+    elem.style.display = 'none';
+}
+
+
+// массив функций для старта игры
+startGame([
+    // закрываем элемент канвас и управления
+    async () => await disabledElementsToggle(canvas, navigation),
+    // показываем приветственный текст
+    async () => await changeHelpText(helpText, 10),
+    // скрываем текст помощи
+    () => hiddenHelpText(helpText),
+    // открываем канвас и элементы управления
+    async () => await disabledElementsToggle(canvas, navigation),
+    // делаем первый рендер картинки и анимацию монстров
+    async () => await firstRenderImage(listObjects, animateMonster),
+    // запускаем таймер игры
+    () => timerGame(59, timerElement),
+]);
