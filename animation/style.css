@@ -11,6 +11,12 @@ body {
 
 .help__text {
     position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
+.help__text h1 {
+    position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -21,6 +27,28 @@ body {
     word-wrap: break-word;
     text-align: center;
     user-select: none;
+}
+
+.help__text span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 11;
+    font-size: 4rem;
+    color: #fff;
+    padding: 1rem;
+    word-wrap: break-word;
+    text-align: center;
+    user-select: none;
+}
+
+.start__game {
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding:  1rem;
 }
 
 .heart {
@@ -67,7 +95,7 @@ body {
     background: #161715;
 }
 
-.left, .right, .up, .down, .turbo, .jump, .monster__count, .timer {
+.left, .right, .up, .down, .turbo, .jump, .monster__count, .timer, .start__game {
     display: block;
     border: 1px solid white;
     border-radius: 1rem;

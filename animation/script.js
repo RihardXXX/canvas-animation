@@ -419,19 +419,22 @@ async function firstRenderImage(listObjects, animateMonster) {
 
 
 // старт таймера
-function timerGame(seconds, element) {
-    var idTimer = setInterval(() => {
+async function timerGame(seconds, element) {
+    return new Promise(resolve => {
+        var idTimer = setInterval(() => {
 
-        element.textContent = seconds < 10 
-                                ? `0${seconds}` 
-                                : seconds;
-        seconds--;
-
-        if (seconds < 0) {
-            clearInterval(idTimer);
-        }
-
-    }, 1000);
+            element.textContent = seconds < 10 
+                                    ? `0${seconds}` 
+                                    : seconds;
+            seconds--;
+    
+            if (seconds < 0) {
+                clearInterval(idTimer);
+                resolve();
+            }
+    
+        }, 1000);
+    })
 }
 
 // приветственный текст к началу игры
@@ -461,22 +464,29 @@ async function startGame(fns) {
 }
 
 // изменение приветственного текста
-function changeHelpText(elem, count) {
+async function changeHelpText(elem, count) {
     if (!elem) {
         return;
     }
 
-    return new Promise(resolve => {
+    var btnStartGame = document.querySelector('.start__game');
+
+    function timerStart(resolve) {
         var idInterval = setInterval(() => {
             if (count === 0) {
                 clearInterval(idInterval);
+                btnStartGame.removeEventListener('click', timerStart);
                 resolve();
             }
     
-            // elem.classList.toggle('test');
-            elem.innerHTML = `<span class="help__text heart">${count}</span>`;
+            elem.innerHTML = `<span class="heart">${count}</span>`;
             count--;
         }, 1000);
+    }
+
+
+    return new Promise(resolve => {
+        btnStartGame.addEventListener('click', () => timerStart(resolve));
     });
 }
 
@@ -487,6 +497,11 @@ function hiddenHelpText(elem) {
     }
 
     elem.style.display = 'none';
+}
+
+// сообщаем о том что игра закончилась и вы набрали баллов
+function gameOver() {
+    
 }
 
 
@@ -503,5 +518,5 @@ startGame([
     // делаем первый рендер картинки и анимацию монстров
     async () => await firstRenderImage(listObjects, animateMonster),
     // запускаем таймер игры
-    () => timerGame(59, timerElement),
+    async () => await timerGame(5, timerElement),
 ]);
