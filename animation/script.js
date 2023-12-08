@@ -520,3 +520,5 @@ startGame([
     // запускаем таймер игры
     async () => await timerGame(5, timerElement),
 ]);
+
+// test commit for rebase
