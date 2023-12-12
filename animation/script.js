@@ -10,7 +10,7 @@ import {
     coincidenceRectangle, 
     uuidv4 
 } from "./utils.js";
-import { useAnimationObject, useLayer, useMonster } from './hooks.js';
+import { useAnimationObject, useLayer, useMonster, useNotificationBoomMonster } from './hooks.js';
 
 // размеры канваса внутри
 const CANVAS_WIDTH = 600;
@@ -87,6 +87,14 @@ const earth = useLayer({
     positionY: -433,
     widthImage: 2400,
     heightImage: 720,
+});
+
+// инициализация уведомления о касания монстра
+const notification = useNotificationBoomMonster({
+    ctxCanvas: ctx,
+    x: 0,
+    y: 20,
+    message: 'упс',
 });
 
 // создание монстров
@@ -404,6 +412,7 @@ function animateMonster() {
         // return;
     }
 
+    // notificationBoomMonster();
 
     reqAnimFrameMonster = requestAnimationFrame(animateMonster);
 }
@@ -510,7 +519,7 @@ startGame([
     // закрываем элемент канвас и управления
     async () => await disabledElementsToggle(canvas, navigation),
     // показываем приветственный текст
-    async () => await changeHelpText(helpText, 10),
+    async () => await changeHelpText(helpText, 0),
     // скрываем текст помощи
     () => hiddenHelpText(helpText),
     // открываем канвас и элементы управления
@@ -518,7 +527,7 @@ startGame([
     // делаем первый рендер картинки и анимацию монстров
     async () => await firstRenderImage(listObjects, animateMonster),
     // запускаем таймер игры
-    async () => await timerGame(5, timerElement),
+    async () => await timerGame(60, timerElement),
 ]);
 
 // test commit for rebase

@@ -321,8 +321,39 @@ const useMonster = ({ imageUrl, ctxCanvas, reverse, id }) => {
     }
 }
 
+// уведомление о касании монстра 
+// функция которая будет уведомллять о том что произошло столкновение
+function useNotificationBoomMonster({
+        ctxCanvas,
+        x,
+        y,
+        message,
+    }) {
+        console.log('notificationBoomMonster');
+
+        var speed = 1.25;
+
+        ctxCanvas.font = "28px serif";
+        ctxCanvas.textBaseline = "bottom";
+        ctxCanvas.fillStyle = "#ff0000";
+
+        // обновление координат
+        function updated(){
+            if (x >= 40) {
+                return 'stop';
+            }
+            x += speed;
+        }
+
+        // рисование на холсте
+        function drawMessage(){
+            ctxCanvas.fillText(message, x, y);;
+        }
+}
+
 export {
     useAnimationObject,
     useLayer,
     useMonster,
+    useNotificationBoomMonster,
 }
