@@ -89,13 +89,6 @@ const earth = useLayer({
     heightImage: 720,
 });
 
-// инициализация уведомления о касания монстра
-const notification = useNotificationBoomMonster({
-    ctxCanvas: ctx,
-    x: 0,
-    y: 20,
-    message: 'упс',
-});
 
 // создание монстров
 let listMonsters = [];
@@ -335,6 +328,8 @@ function animateJump() {
 var reqAnimFrameMonster;
 // количество касаний за минуту
 var isCoincidence = [];
+// уведомление о касании монстра
+var notification;
 // анимация монстров движения в отдельном потоке
 function animateMonster() {
 
@@ -374,12 +369,22 @@ function animateMonster() {
     // тут будем при движении монстров сравнивать касаются ли они человека
     const people = listObjects[3];
 
-    ctx.strokeStyle = "green";
-    ctx.strokeRect(people.getPositionXJump(), people.getPositionYJump(), people.getWidthOnCanvas(), people.getHeightOnCanvas());
+    // ctx.strokeStyle = "green";
+    // ctx.strokeRect(
+    //     people.getPositionXJump(), 
+    //     people.getPositionYJump(), 
+    //     people.getWidthOnCanvas(), 
+    //     people.getHeightOnCanvas()
+    // );
 
-    listMonsters.forEach(monster => {
-        ctx.strokeRect(monster.getPositionX(),  monster.getPositionY(), monster.getWidth(), monster.getHeight());
-    })
+    // listMonsters.forEach(monster => {
+    //     ctx.strokeRect(
+    //         monster.getPositionX(),  
+    //         monster.getPositionY(), 
+    //         monster.getWidth(), 
+    //         monster.getHeight()
+    //     );
+    // })
 
     let result = coincidenceRectangle({
         mainObject: {
@@ -408,11 +413,30 @@ function animateMonster() {
         // увеличиваем количество попаданий монстров в счетчике
         monsterCount.textContent = Number(isCoincidence.length);
 
+        // инициализация уведомления о касания монстра
+        notification = useNotificationBoomMonster({
+            ctxCanvas: ctx,
+            x: 0,
+            y: 50,
+            message: 'БУМ',
+        });
         // cancelAnimationFrame(reqAnimFrameMonster);
         // return;
     }
 
-    // notificationBoomMonster();
+    if (notification) {
+            
+        console.log(112);
+        notification.drawMessage();
+        stop = notification.updated();
+
+        console.log('stop: ', stop);
+        
+        if (stop) {
+            notification = undefined;
+            stop = '';
+        }
+    }
 
     reqAnimFrameMonster = requestAnimationFrame(animateMonster);
 }
@@ -519,7 +543,7 @@ startGame([
     // закрываем элемент канвас и управления
     async () => await disabledElementsToggle(canvas, navigation),
     // показываем приветственный текст
-    async () => await changeHelpText(helpText, 0),
+    async () => await changeHelpText(helpText, 5),
     // скрываем текст помощи
     () => hiddenHelpText(helpText),
     // открываем канвас и элементы управления

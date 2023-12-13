@@ -333,13 +333,13 @@ function useNotificationBoomMonster({
 
         var speed = 1.25;
 
-        ctxCanvas.font = "28px serif";
+        ctxCanvas.font = "36px serif";
         ctxCanvas.textBaseline = "bottom";
         ctxCanvas.fillStyle = "#ff0000";
 
         // обновление координат
         function updated(){
-            if (x >= 40) {
+            if (x >= 60) {
                 return 'stop';
             }
             x += speed;
@@ -348,6 +348,11 @@ function useNotificationBoomMonster({
         // рисование на холсте
         function drawMessage(){
             ctxCanvas.fillText(message, x, y);;
+        }
+
+        return {
+            updated,
+            drawMessage,
         }
 }
 
