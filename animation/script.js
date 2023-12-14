@@ -138,17 +138,8 @@ function selectPlatform({ desktop, tablet, mobile }) {
             cancelAnimationFrame(reqAnimFrameId);
         });
     
-        document.addEventListener('keydown', e => {
-            startHandler(e, true);
-        });
-    
-        document.addEventListener('keyup', e => {
-            // чтобы поднятие клавы сработало разово сработало один раз
-            if (e.repeat) return;
-            // отмена анимации
-            cancelAnimationFrame(reqAnimFrameId);
-            // cancelAnimationFrame(reqAnimFrameMonster);
-        });
+        document.addEventListener('keydown', keyDownHandler);
+        document.addEventListener('keyup', e => keyUpHandler);
     
     } else if (tablet || mobile) {
         console.log('tablet || mobile');
@@ -230,6 +221,18 @@ function startHandler(e, isKeyboard) {
         animate();
         animateMonster();
     }
+}
+
+function keyDownHandler(e) {
+    startHandler(e, true);
+}
+
+function keyUpHandler(e) {
+    // чтобы поднятие клавы сработало разово сработало один раз
+    if (e.repeat) return;
+    // отмена анимации
+    cancelAnimationFrame(reqAnimFrameId);
+    // cancelAnimationFrame(reqAnimFrameMonster);
 }
 
 
@@ -426,11 +429,11 @@ function animateMonster() {
 
     if (notification) {
             
-        console.log(112);
+        // console.log(112);
         notification.drawMessage();
         stop = notification.updated();
 
-        console.log('stop: ', stop);
+        // console.log('stop: ', stop);
         
         if (stop) {
             notification = undefined;
@@ -535,6 +538,34 @@ function hiddenHelpText(elem) {
 // сообщаем о том что игра закончилась и вы набрали баллов
 function gameOver() {
     
+    // если таймер дошел до нуля
+    // 1. Останавливаем все анимации +
+    // 2. Отключаем все кнопки и слушатели +
+    // 3. Выводим окно о том что столько то столкновений
+    console.log('gameOver');
+    // массив идентификаторов анимаций
+    [
+        reqAnimFrameMonster,
+        reqAnimFrameIdJump,
+        reqAnimFrameId
+    ].forEach(
+        reqAnimFrameValue => cancelAnimationFrame(reqAnimFrameValue)
+    );
+
+    [
+        startHandler,
+        turbo,
+        jump
+    ].forEach(
+        listenerFunction => navigation.removeEventListener('mousedown', listenerFunction)
+    );
+
+    [
+        { eventName: 'keydown', handler: keyDownHandler },
+        { eventName: 'keyup', handler: keyUpHandler },
+    ].forEach(
+        ({ eventName, handler }) =>  document.removeEventListener(eventName, handler)
+    );
 }
 
 
@@ -543,7 +574,7 @@ startGame([
     // закрываем элемент канвас и управления
     async () => await disabledElementsToggle(canvas, navigation),
     // показываем приветственный текст
-    async () => await changeHelpText(helpText, 5),
+    async () => await changeHelpText(helpText, 0),
     // скрываем текст помощи
     () => hiddenHelpText(helpText),
     // открываем канвас и элементы управления
@@ -551,7 +582,9 @@ startGame([
     // делаем первый рендер картинки и анимацию монстров
     async () => await firstRenderImage(listObjects, animateMonster),
     // запускаем таймер игры
-    async () => await timerGame(60, timerElement),
+    async () => await timerGame(10, timerElement),
+    // завершение игры
+    () => gameOver(),
 ]);
 
 // test commit for rebase
