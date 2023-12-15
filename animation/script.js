@@ -132,32 +132,28 @@ function selectPlatform({ desktop, tablet, mobile }) {
         // прыжок
         navigation.addEventListener('mousedown', jump);
         navigation.addEventListener('mouseup', e => {
+
             if (e.target.classList[0] === 'jump') {
                 return;
             }
             cancelAnimationFrame(reqAnimFrameId);
         });
     
-        document.addEventListener('keydown', keyDownHandler);
-        document.addEventListener('keyup', e => keyUpHandler);
+        document.addEventListener('keydown', e => keyDownHandler(e));
+        document.addEventListener('keyup', e => keyUpHandler(e));
     
     } else if (tablet || mobile) {
         console.log('tablet || mobile');
         navigation.addEventListener('touchstart', startHandler);
         navigation.addEventListener('touchstart', turbo);
         navigation.addEventListener('touchstart', jump);
-        navigation.addEventListener('touchend', e => {
-            // if (e.target.classList[0] === 'jump') {
-            //     return;
-            // }
-            // нахождение объекта по классу
-            cancelAnimationFrame(reqAnimFrameId);
-        });
+        navigation.addEventListener('touchend', touchendHandler);
     }
 }
 
 // проверка платформы и навешивание событий в зависимости от платформы
 const { desktop, tablet, mobile } = checkPlatform();
+
 selectPlatform({ desktop, tablet, mobile });
 
 //  тут выбираем скорость анимации
@@ -224,6 +220,7 @@ function startHandler(e, isKeyboard) {
 }
 
 function keyDownHandler(e) {
+    console.log('keyDownHandler');
     startHandler(e, true);
 }
 
@@ -233,6 +230,10 @@ function keyUpHandler(e) {
     // отмена анимации
     cancelAnimationFrame(reqAnimFrameId);
     // cancelAnimationFrame(reqAnimFrameMonster);
+}
+
+function touchendHandler() {
+    cancelAnimationFrame(reqAnimFrameId);
 }
 
 
@@ -552,20 +553,33 @@ function gameOver() {
         reqAnimFrameValue => cancelAnimationFrame(reqAnimFrameValue)
     );
 
-    [
-        startHandler,
-        turbo,
-        jump
-    ].forEach(
-        listenerFunction => navigation.removeEventListener('mousedown', listenerFunction)
-    );
+    if (desktop) {
+        [
+            startHandler,
+            turbo,
+            jump
+        ].forEach(
+            listenerFunction => navigation.removeEventListener('mousedown', listenerFunction)
+        );
+    
+        [
+            { eventName: 'keydown', handler: keyDownHandler },
+            { eventName: 'keyup', handler: keyUpHandler },
+        ].forEach(
+            ({ eventName, handler }) =>  document.removeEventListener(eventName, handler)
+        );
+    } else if(tablet || mobile) {
+        [
+            { eventName: 'touchstart', handler: startHandler },
+            { eventName: 'touchstart', handler: turbo },
+            { eventName: 'touchstart', handler: jump},
+            { eventName: 'touchend', handler: touchendHandler },
+        ].forEach(
+            ({ eventName, handler }) =>  navigation.removeEventListener(eventName, handler)
+        );
+    }    
 
-    [
-        { eventName: 'keydown', handler: keyDownHandler },
-        { eventName: 'keyup', handler: keyUpHandler },
-    ].forEach(
-        ({ eventName, handler }) =>  document.removeEventListener(eventName, handler)
-    );
+
 }
 
 
