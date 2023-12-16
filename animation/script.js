@@ -139,8 +139,8 @@ function selectPlatform({ desktop, tablet, mobile }) {
             cancelAnimationFrame(reqAnimFrameId);
         });
     
-        document.addEventListener('keydown', e => keyDownHandler(e));
-        document.addEventListener('keyup', e => keyUpHandler(e));
+        document.addEventListener('keydown', keyDownHandler);
+        document.addEventListener('keyup', keyUpHandler);
     
     } else if (tablet || mobile) {
         console.log('tablet || mobile');
@@ -489,15 +489,49 @@ async function disabledElementsToggle(...elements) {
 }
 
 // запуск функция поочереди
-async function startGame(fns) {
+async function startGame(fns = [
+        // закрываем элемент канвас и управления
+        async () => await disabledElementsToggle(canvas, navigation),
+        // показываем приветственный текст
+        async () => await changeHelpText(helpText, 0),
+        // скрываем текст помощи
+        () => hiddenHelpText(helpText),
+        // открываем канвас и элементы управления
+        async () => await disabledElementsToggle(canvas, navigation),
+        // делаем первый рендер картинки и анимацию монстров
+        async () => await firstRenderImage(listObjects, animateMonster),
+        // запускаем таймер игры
+        async () => await timerGame(10, timerElement),
+        // завершение игры
+        async () => await gameOver(),
+    ]) {
+
+    console.log('start game');
+
     if (!fns.length) {
         return;
     }
 
+    console.log('start game2');
     // асинхронный вызов функций с ожиданием
     for (const fn of fns) {
         await fn();
     }
+}
+
+var btnStartGame = document.querySelector('.start__game');
+
+function timerStart(resolve, count, elem) {
+    var idInterval = setInterval(() => {
+        if (count === 0) {
+            clearInterval(idInterval);
+            btnStartGame.removeEventListener('click', timerStart);
+            resolve();
+        }
+
+        elem.innerHTML = `<span class="heart">${count}</span>`;
+        count--;
+    }, 1000);
 }
 
 // изменение приветственного текста
@@ -506,24 +540,8 @@ async function changeHelpText(elem, count) {
         return;
     }
 
-    var btnStartGame = document.querySelector('.start__game');
-
-    function timerStart(resolve) {
-        var idInterval = setInterval(() => {
-            if (count === 0) {
-                clearInterval(idInterval);
-                btnStartGame.removeEventListener('click', timerStart);
-                resolve();
-            }
-    
-            elem.innerHTML = `<span class="heart">${count}</span>`;
-            count--;
-        }, 1000);
-    }
-
-
     return new Promise(resolve => {
-        btnStartGame.addEventListener('click', () => timerStart(resolve));
+        btnStartGame.addEventListener('click', () => timerStart(resolve, count, elem));
     });
 }
 
@@ -537,7 +555,7 @@ function hiddenHelpText(elem) {
 }
 
 // сообщаем о том что игра закончилась и вы набрали баллов
-function gameOver() {
+async function gameOver() {
     
     // если таймер дошел до нуля
     // 1. Останавливаем все анимации +
@@ -561,6 +579,8 @@ function gameOver() {
         ].forEach(
             listenerFunction => navigation.removeEventListener('mousedown', listenerFunction)
         );
+
+        console.log('desktop remove');
     
         [
             { eventName: 'keydown', handler: keyDownHandler },
@@ -580,25 +600,36 @@ function gameOver() {
     }    
 
 
+    await showResultGame(helpText, monsterCount.textContent);
+}
+
+// показываем сообщение в модалке сколько было столкновений
+async function showResultGame(elem, countMonsters) {
+    if (!elem) {
+        return;
+    }
+
+    await disabledElementsToggle(canvas, navigation)
+
+    elem.innerHTML = `
+        <h1>
+            Игра окончена <br> у вас ${countMonsters} столкновений с монстрами
+        </h1>
+        <br>
+        <br>
+        <button class="start__game">
+            начать игру заново
+        </button>
+    `;
+
+    var btnStartGame = document.querySelector('.start__game');
+
+    elem.style.display = 'block';
+
+    btnStartGame.addEventListener('click', () => window.location.reload());
 }
 
 
 // массив функций для старта игры
-startGame([
-    // закрываем элемент канвас и управления
-    async () => await disabledElementsToggle(canvas, navigation),
-    // показываем приветственный текст
-    async () => await changeHelpText(helpText, 0),
-    // скрываем текст помощи
-    () => hiddenHelpText(helpText),
-    // открываем канвас и элементы управления
-    async () => await disabledElementsToggle(canvas, navigation),
-    // делаем первый рендер картинки и анимацию монстров
-    async () => await firstRenderImage(listObjects, animateMonster),
-    // запускаем таймер игры
-    async () => await timerGame(10, timerElement),
-    // завершение игры
-    () => gameOver(),
-]);
-
+startGame();
 // test commit for rebase
