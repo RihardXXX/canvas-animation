@@ -356,9 +356,67 @@ function useNotificationBoomMonster({
         }
 }
 
+function useLocalStorage() {
+    var result = 'result';
+
+    // первичная инициализация хранилища пустым массивом
+    (function initialState() {
+        if (!getResults()) {
+            localStorage.setItem(result, JSON.stringify([]));
+        }
+    })();
+
+    // получение результата 10 игр
+    function getResults() {
+        if (!localStorage) {
+            return;
+        }
+        return JSON.parse(localStorage.getItem(result));
+    }
+
+    // установка нового результата если он не выходит в топ 10 то не добавляем
+    // сохраняем 10 лучших результатов с датами
+    function setResults(newItem) {
+        if (newItem) {
+            return;
+        }
+
+        var data = getResults();
+
+        if (data.length >= 10) {
+            const currentTotal = newItem.total;
+
+            // если текущие результат меньше тех что в базе хранения то игнорируем сохранение
+            const isMinCurrent = data.every(item => item.total > currentTotal);
+
+            if (isMinCurrent) {
+                return;
+            }
+
+            // иначе сохраняем в бд данный результат предварительно
+        } else {
+            // если меньше 10 то добавляем и сортируем а потом сохраняем
+            data.push(newItem);
+            const newData = data.toSorted((a, b) => a.total - b.total);
+            localStorage.setItem(result, JSON.stringify(newData));
+        }
+    }
+
+    return {
+        getResults,
+        setResults,
+    }
+}
+
+function useCurrentDate() {
+
+}
+
 export {
     useAnimationObject,
     useLayer,
     useMonster,
     useNotificationBoomMonster,
+    useLocalStorage,
+    useCurrentDate,
 }
