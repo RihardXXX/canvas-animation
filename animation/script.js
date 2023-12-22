@@ -10,7 +10,7 @@ import {
     coincidenceRectangle, 
     uuidv4 
 } from "./utils.js";
-import { useAnimationObject, useLayer, useMonster, useNotificationBoomMonster } from './hooks.js';
+import { useAnimationObject, useLayer, useMonster, useNotificationBoomMonster, useCurrentDate, useLocalStorage } from './hooks.js';
 
 // размеры канваса внутри
 const CANVAS_WIDTH = 600;

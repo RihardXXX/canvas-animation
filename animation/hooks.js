@@ -409,7 +409,30 @@ function useLocalStorage() {
 }
 
 function useCurrentDate() {
+    function getDate() {
+        return new Date();
+    }
 
+    function getDay() {
+        return `0${getDate().getDay()}`;
+    }
+
+    function getMonth() {
+        var month = getDate().getMonth() + 1;
+        return month > 10 ? month : `0${month}`;
+    }
+
+    function getYear() {
+        return getDate().getFullYear();
+    }
+
+    function getFormatDateOverGame() {
+        return `${getDay()} - ${getMonth()} - ${getYear()} год`;
+    }
+
+    return [
+        getFormatDateOverGame
+    ]
 }
 
 export {
