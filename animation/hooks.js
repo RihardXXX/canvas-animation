@@ -377,7 +377,7 @@ function useLocalStorage() {
     // установка нового результата если он не выходит в топ 10 то не добавляем
     // сохраняем 10 лучших результатов с датами
     function setResults(newItem) {
-        if (newItem) {
+        if (!newItem) {
             return;
         }
 
@@ -387,17 +387,34 @@ function useLocalStorage() {
             const currentTotal = newItem.total;
 
             // если текущие результат меньше тех что в базе хранения то игнорируем сохранение
-            const isMinCurrent = data.every(item => item.total > currentTotal);
+            const isMinCurrent = data.every(item => item.total < currentTotal);
 
             if (isMinCurrent) {
                 return;
             }
 
             // иначе сохраняем в бд данный результат предварительно
+            // удаляем самое мин значение и вместо него вставляем наш объектор и сортируем перед сохранением
+            const idMaxItem = data.reduce((acum, cur) => {
+                if (acum.total > cur.total) {
+                    return acum;
+                } else {
+                    return cur;
+                }
+            });
+
+            // удаляем мин значение из текущего списка, добавляем новое, и сортируем список
+            const newData = [...data.filter(item => item.id !== idMaxItem.id), newItem]
+                                .toSorted((a, b) => a.total - b.total);
+
+            localStorage.setItem(result, JSON.stringify(newData));
         } else {
             // если меньше 10 то добавляем и сортируем а потом сохраняем
             data.push(newItem);
+            console.log('data', data);
             const newData = data.toSorted((a, b) => a.total - b.total);
+            console.log('newData', newData);
+            console.log('newItem', newItem);
             localStorage.setItem(result, JSON.stringify(newData));
         }
     }

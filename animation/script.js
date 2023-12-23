@@ -611,6 +611,8 @@ async function showResultGame(elem, countMonsters) {
 
     await disabledElementsToggle(canvas, navigation)
 
+    createAndSaveResult(countMonsters);
+
     elem.innerHTML = `
         <h1>
             Игра окончена <br> у вас ${countMonsters} столкновений с монстрами
@@ -627,6 +629,20 @@ async function showResultGame(elem, countMonsters) {
     elem.style.display = 'block';
 
     btnStartGame.addEventListener('click', () => window.location.reload());
+}
+
+function createAndSaveResult(countMonsters) {
+    const [getFormatDateOverGame] = useCurrentDate()
+    const { setResults, getResults } = useLocalStorage()
+
+    const newItem = {
+        id: uuidv4(),
+        date: getFormatDateOverGame(),
+        total: countMonsters,
+    }
+
+    setResults(newItem);
+    console.log(getResults())
 }
 
 
