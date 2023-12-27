@@ -43,6 +43,21 @@ body {
     user-select: none;
 }
 
+.help__text ol {
+    position: absolute;
+    width: 100%;
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 11;
+    font-size: 2rem;
+    color: #fff;
+    padding: 1rem;
+    word-wrap: break-word;
+    text-align: center;
+    user-select: none;
+}
+
 .start__game {
     position: absolute;
     top: 60%;

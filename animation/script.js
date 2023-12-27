@@ -611,13 +611,27 @@ async function showResultGame(elem, countMonsters) {
 
     await disabledElementsToggle(canvas, navigation)
 
-    createAndSaveResult(countMonsters);
+
+    const resultList = createAndSaveResult(countMonsters);
+    const lengthList = resultList.length;
+
+    console.log(resultList)
+
+    let lies = '';
+    for (let i = 0; i < lengthList; i++) {
+        lies += `<li>дата: ${resultList[i]['date']}- очки${resultList[i]['total']}</li>`
+    }
+
+    console.log(112, lies);
 
     elem.innerHTML = `
         <h1>
             Игра окончена <br> у вас ${countMonsters} столкновений с монстрами
         </h1>
         <br>
+        <ol>
+            ${lies}
+        </ol>
         <br>
         <button class="start__game">
             начать игру заново
@@ -627,6 +641,10 @@ async function showResultGame(elem, countMonsters) {
     var btnStartGame = document.querySelector('.start__game');
 
     elem.style.display = 'block';
+
+    if (tablet || mobile) {
+        btnStartGame.style.top = '70%';
+    }
 
     btnStartGame.addEventListener('click', () => window.location.reload());
 }
@@ -642,7 +660,7 @@ function createAndSaveResult(countMonsters) {
     }
 
     setResults(newItem);
-    console.log(getResults())
+    return getResults()
 }
 
 
