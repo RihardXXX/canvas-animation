@@ -493,7 +493,7 @@ async function startGame(fns = [
         // закрываем элемент канвас и управления
         async () => await disabledElementsToggle(canvas, navigation),
         // показываем приветственный текст
-        async () => await changeHelpText(helpText, 0),
+        async () => await changeHelpText(helpText, 10),
         // скрываем текст помощи
         () => hiddenHelpText(helpText),
         // открываем канвас и элементы управления
@@ -501,7 +501,7 @@ async function startGame(fns = [
         // делаем первый рендер картинки и анимацию монстров
         async () => await firstRenderImage(listObjects, animateMonster),
         // запускаем таймер игры
-        async () => await timerGame(10, timerElement),
+        async () => await timerGame(60, timerElement),
         // завершение игры
         async () => await gameOver(),
     ]) {
