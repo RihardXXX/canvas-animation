@@ -7,7 +7,12 @@ body {
 }
 
 canvas {
-    width: 400px;
-    height: 600px;
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 800px;
+    height: 800px;
+    border: 2px dotted black;
     /* background-color: black; */
 }

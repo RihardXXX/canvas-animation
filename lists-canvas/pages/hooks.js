@@ -12,64 +12,78 @@ export function useLetter({ ctx }) {
     ctx.lineJoin = "round"; // скругление
     ctx.lineWidth = 10;
     ctx.lineCap = 'round';
+    var leftOrRight = true;
     // Shadow
     // ctx.shadowColor = "black"; // цвет тени
     // ctx.shadowBlur = 5; // степень размытия тени
     //
 
     function left() {
-        xPosition -= stageFrame
-        yPosition += 1 * Math.sin(.7); 
-        ctx.lineTo(yPosition, xPosition);
+        console.log('left');
+        console.log('xPosition', xPosition);
+        // необходимо для переключения на правую функцию
         if (xPosition <= 0) {
-            return;
+            leftOrRight = false;
+            xPosition = 0;
+            ctx.beginPath(); // Начинает новый путь
+            ctx.moveTo(yPosition, xPosition); // начало движения линии
         }
+        xPosition -= stageFrame
+        yPosition += 1 * Math.sin(.6); 
+        ctx.lineTo(yPosition, xPosition);
     }
 
     function right() {
-        
+        console.log('right');
+        console.log('xPosition', xPosition);
+        if (xPosition >= 600) {
+            leftOrRight = null; // полностью отключить работу функции 
+            return
+        }
+        xPosition += stageFrame
+        yPosition += 1 * Math.cos(.6); 
+        ctx.lineTo(yPosition, xPosition);
     }
 
     function draw() {
 
-
-
-        // changeByPosition = Math.floor(gameFrame / stageFrame) % 600;
-
-        // if (xPosition <= 0) {
-        //     xPosition = 600;
-        //     yPosition = 0;
-        //     ctx.clearRect(0, 0, 400, 600);
-        //     ctx.beginPath(); // Начинает новый путь
-        //     ctx.moveTo(yPosition, xPosition); // начало движения линии
-        // }
-
-        left();
-
+        if (leftOrRight) {
+            left()
+        } else if(leftOrRight === false) {
+            right()
+        }
 
         ctx.stroke(); // Отображает путь
         gameFrame++;
     }
-    
-    // // обновление координат
-    // const updated = () => {
-    //     // тут анимация
-    //     positionXInImage = Math.floor(gameFrame / stageFrame) % countFrame;
 
-    //     // движение по оси X
-    //     if (positionXMonsterInCanvas < -60) {
-    //         positionXMonsterInCanvas = 1200;
-    //     }
-    //     positionXMonsterInCanvas -= speed;
 
-    //     // углы движения и кривая синусоидная по оси Y
-    //     positionYMonsterInCanvas += getRandomInt(1, 2) * Math.sin(angle); // синус угла
-    //     angle += angleSpeed; // тут шаг угла меняем
-    //     // angle += 0.2; // тут шаг угла меняем
+    return {
+        draw,
+    }
+}
 
-    //     gameFrame++;
-    // }
-    // единица измерения для рисования
+export function useArc({ ctx, dotCenter, radiusParams, startAngle, endAngle, anticlockwise=false }) {
+    var x = dotCenter
+    var y = dotCenter
+    var radius = radiusParams
+    var start = startAngle
+    var end = endAngle
+    var fullRadian = 2 * Math.PI // 6.28
+    var gameFrame = 0; // общий счетчик который увеличивается при кадрировании 60 кадров в секунду
+    var step = 0.03
+
+    function draw() {
+        console.log('draw');
+        if (end >= 6.28) {
+            return 'stop';
+        }
+        ctx.beginPath();
+        end += step
+        ctx.arc(x, y, radius, start, end, anticlockwise);
+        ctx.stroke();
+        gameFrame++
+    }
 
     return {
         draw,
