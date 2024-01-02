@@ -18,25 +18,51 @@ canvas.height = CANVAS_HEIGHT;
 
 var letter = useLetter({ ctx: ctx });
 
-var arc = useArc({ 
+var arc1 = useArc({ 
     ctx,
     dotCenter: 100,
     radiusParams: 50,
     startAngle: 0,
-    endAngle: 0.1
+    endAngle: 0.1,
+    CANVAS_WIDTH,
+    CANVAS_HEIGHT,
+ })
+
+ var arc2 = useArc({ 
+    ctx,
+    dotCenter: 200,
+    radiusParams: 50,
+    startAngle: 0,
+    endAngle: 3,
+    CANVAS_WIDTH,
+    CANVAS_HEIGHT,
+ })
+
+ var arc3 = useArc({ 
+    ctx,
+    dotCenter: 300,
+    radiusParams: 50,
+    startAngle: 0,
+    endAngle: 3,
+    CANVAS_WIDTH,
+    CANVAS_HEIGHT,
  })
 
 var animateId;
 var result;
 // запуск анимаций буквы
 function animate() {
-    // ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT); // очистка всего канваса 60 раз в секунду
+    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT); // очистка всего канваса 60 раз в секунду
     // letter.draw();
-    result = arc.draw();
-    if (result === 'stop') {
-        cancelAnimationFrame(animateId)
-        return
-    }
+    result = arc1.drawStyle1();
+
+    arc2.drawStyle2()
+
+    arc3.drawStyle3()
+    // if (result === 'stop') {
+    //     cancelAnimationFrame(animateId)
+    //     return
+    // }
     animateId = requestAnimationFrame(animate);
 }
 

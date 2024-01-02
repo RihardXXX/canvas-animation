@@ -63,7 +63,17 @@ export function useLetter({ ctx }) {
     }
 }
 
-export function useArc({ ctx, dotCenter, radiusParams, startAngle, endAngle, anticlockwise=false }) {
+export function useArc({ 
+        ctx, 
+        dotCenter, 
+        radiusParams, 
+        startAngle,
+        endAngle, 
+        anticlockwise=false,
+        CANVAS_WIDTH,
+        CANVAS_HEIGHT, 
+    }) {
+
     var x = dotCenter
     var y = dotCenter
     var radius = radiusParams
@@ -72,11 +82,22 @@ export function useArc({ ctx, dotCenter, radiusParams, startAngle, endAngle, ant
     var fullRadian = 2 * Math.PI // 6.28
     var gameFrame = 0; // общий счетчик который увеличивается при кадрировании 60 кадров в секунду
     var step = 0.03
+    ctx.shadowColor = "rgba(4, 255, 0, 0.8)";
+    ctx.shadowBlur = 15;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
 
-    function draw() {
-        console.log('draw');
+    var start1 = start + 1
+    var end1 = end + 1
+
+    function drawStyle1() {
+        // console.log('draw');
         if (end >= 6.28) {
-            return 'stop';
+            start = 0
+            end = 0
+            gameFrame = 0
+            // ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            // return 'stop';
         }
         ctx.beginPath();
         end += step
@@ -85,7 +106,35 @@ export function useArc({ ctx, dotCenter, radiusParams, startAngle, endAngle, ant
         gameFrame++
     }
 
+    function drawStyle2() {
+        ctx.beginPath();
+        start += step
+        end += step
+        ctx.arc(x, y, radius, start, end, anticlockwise);
+        ctx.stroke();
+
+        gameFrame++
+    }
+
+    function drawStyle3() {
+        ctx.beginPath();
+        start += step
+        end += step
+        ctx.arc(x, y, radius, start, end, anticlockwise);
+        ctx.stroke();
+
+        ctx.beginPath();
+        start1 -= step
+        end1 -= step
+        ctx.arc(x, y, radius - 15, start1, end1, true);
+        ctx.stroke();
+        
+        gameFrame++
+    }
+
     return {
-        draw,
+        drawStyle1,
+        drawStyle2,
+        drawStyle3,
     }
 }
